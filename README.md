@@ -31,10 +31,11 @@ To install required dependencies:
 pip install -r requirements.txt
 ```
 
-If during development process, you need to install new dependencies. Use pip to install new dependencies. Then at the end of the process:
+If during development process, you need to install new dependencies, use pip to install them. Then at the end of the process:
 ```bash
 pip freeze > requirements.txt
 ```
+This will update the requirements.txt file. You then can commit this file.
 
 ## To Run ##
 To run, use either:
