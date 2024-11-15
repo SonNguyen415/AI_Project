@@ -1,0 +1,3 @@
+collections-extended==2.0.2
+data-structures==0.1.6
+setuptools==75.5.0

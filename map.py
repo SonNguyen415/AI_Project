@@ -4,7 +4,6 @@ This file will contain logic for the map generation
 import random
 from enum import Enum
 
-
 class TerrainType(Enum):
     ROAD = 1
     FLATLAND = 2
@@ -24,6 +23,7 @@ class Location:
         self.coordinate = coordinate
         self.location_type = location_type
         self.army = 0
+        self.supply = None
         self.path_cost = 2
 
     def calculate_path_cost(self):
@@ -40,6 +40,7 @@ class Location:
                 return 4
             case TerrainType.WATER:
                 return 5
+
 
 class GameMap:
     def __init__(self, width: int, height: int, n_hubs: int, n_generators: int):
