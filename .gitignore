@@ -1,0 +1,38 @@
+# Ignore the virtual environment directory
+aivenv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment files
+*.env
+*.venv
+
+# Logs and temporary files
+*.log
+*.out
+*.err
+*.swp
+*.swo
+*.tmp
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore Python packaging files
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Ignore IDE/project configuration files
+.vscode/
+.idea/
