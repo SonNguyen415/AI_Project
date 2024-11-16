@@ -2,21 +2,21 @@
 
 This is the AI Algorithms project. The goal is to develop a strategy game AI to play in an unknown map with unknown opposition. This AI must take into account a supply system and defend its own while taking out the other side's supply system
 
-## Development Rules ##
+### Development Rules ###
 1. Develop features in a branch, and make commits as small as possible. Pull requests into the main branch needs to be approved by at least on other team member.
 
 2. Follow standard python naming conventions. Snake cases for variable and function names. Camel case for class names.
 
 3. Use `git pull --rebase` when pulling from origin.
 
-## Components ##
+### Components ###
 - `main.py` runs the game across various scenarios for evaluation purposes.
 - `game.py` takes in a scenario as an input, and generate a game and run it.
 - `map.py` takes in some arguments and generates a 2D grid map to represent the game map.
 - `army.py` controls the movements of armies and all related mechanics.
 - `supply.py` controls the movement of supplies from generator to hubs and calculate supply lines.
 
-## Dependencies ##
+### Dependencies ###
 For any new dependencies that might be needed. Make sure to use the virutal environment. To create a virtual environment:
 
 ```bash
@@ -39,7 +39,7 @@ pip freeze > requirements.txt
 ```
 This will update the requirements.txt file. You then can commit this file.
 
-## To Run ##
+### To Run ###
 To run:
 ```bash
 python main.py
