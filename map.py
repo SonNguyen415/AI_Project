@@ -20,9 +20,8 @@ class LocationType(Enum):
     
 
 class Location:
-    def __init__(self, terrain, location_type, coordinate):
+    def __init__(self, terrain, location_type):
         self.terrain = terrain
-        self.coordinate = coordinate
         self.location_type = location_type
         self.army = 0
         self.supply = None
@@ -50,7 +49,7 @@ class GameMap:
         # We can perform random generation later
         self.width = width
         self.height = height
-        self.map = [[Location(TerrainType.FLATLAND, LocationType.PASSABLE, (x,y)) for x in range(width)] for y in range(height)]
+        self.map = [[Location(TerrainType.FLATLAND, LocationType.PASSABLE) for x in range(width)] for y in range(height)]
         self.hubs = []
 
         # Set the terrain as well upon initialization
