@@ -7,6 +7,8 @@ This is the AI Algorithms project. The goal is to develop a strategy game AI to 
 
 2. Follow standard python naming conventions. Snake cases for variable and function names. Camel case for class names.
 
+3. Use `git pull --rebase` when pulling from origin.
+
 ## Components ##
 - `main.py` runs the game across various scenarios for evaluation purposes.
 - `game.py` takes in a scenario as an input, and generate a game and run it.
@@ -38,10 +40,7 @@ pip freeze > requirements.txt
 This will update the requirements.txt file. You then can commit this file.
 
 ## To Run ##
-To run, use either:
+To run:
 ```bash
 python main.py
-```
-```bash
-python3 main.py
 ```
