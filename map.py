@@ -14,8 +14,10 @@ class TerrainType(Enum):
 
 class LocationType(Enum):
     PASSABLE = 1
-    SUPPLY_HUB = 2
-    IMPASSABLE = 3
+    IMPASSABLE = 2
+    SUPPLY_HUB = 3
+    SUPPLY_GENERATOR = 4
+    
 
 class Location:
     def __init__(self, terrain, location_type, coordinate):
@@ -77,6 +79,27 @@ class GameMap:
             for x in range(0, self.width):
                 self.map[x][y].terrain = TerrainType.ROAD
         
+        # Generate supply generators, direction is either north-south or west-east
+        direction = random.choice([0,1])
+        for i in range(2):
+            # Fix the x or y coordinate based on direction (norht-south or west-east)
+            if direction == 0 and i == 0:
+                y = 0
+            elif direction == 0 and i == 1:
+                y = self.height - 1
+            elif direction == 1 and i == 0:
+                x = 0
+            elif direction == 1 and i == 1:
+                x = self.width - 1
+            
+            for j in range(n_generators):
+                if direction == 0:
+                    x = random.randint(0, self.width-1)
+                else:
+                    y = random.randint(0, self.height-1)
+                self.map[x][y].location_type = LocationType.SUPPLY_GENERATOR
+                self.hubs += [self.map[x][y]]
+
 
         # Create a list of terrains excluding roads and assign weight
         exclude_road = [terrain for terrain in TerrainType if terrain != TerrainType.ROAD]
@@ -105,6 +128,9 @@ class GameMap:
                     if random_terrain == TerrainType.MOUNTAIN:
                         if random.random() <= 0.25:
                             location.location_type = LocationType.IMPASSABLE
+
+
+       
 
 
     def display_map(self):
