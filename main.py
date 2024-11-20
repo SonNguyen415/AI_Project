@@ -2,8 +2,8 @@ from game import Game
 
 
 scenario = {
-    "width": 100,
-    "height": 100,
+    "width": 10,
+    "height": 9,
     "n_hubs": 9, # Must be a perfect square for now
     "n_generators": 1
 }
