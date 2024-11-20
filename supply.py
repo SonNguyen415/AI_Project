@@ -2,11 +2,9 @@
 This file will contain logic for the supply system
 """
 
-from data_structures import LinkedList
-
-MAX_SUPPLY = 100
-MIN_SUPPLY = 10 # Minimum before sending
-
+import collections 
+import map
+import locations as loc
 
 class SupplyPacket:
     def __init__(self, supply, source, destination):
@@ -24,18 +22,32 @@ class SupplyPacket:
     def calculate_travel_time(self):
         return 0
 
-class SupplyTracker:
-    def __init__(self):
-        self.list = LinkedList() 
 
-    def add_packet(self, supply, source, destination):
+class SupplyGraph:
+    """
+    This class contains the agent's specific supply graph. The graph portraying the hubs and supply lines as it is per tick
+    """
+    def __init__(self):
+        self.graph = dict()
+
+
+
+class SupplyTracker:
+    """
+    This class will contain the graph of all the supply hubs for both sides.
+    """
+    def __init__(self):
+        self.supply_list = collections.deque() 
+        self.graph = dict()
+
+    def add_packet(self, supply: int, source: tuple, destination: tuple):
         # Make a supply packet and add to the list
         new_packet = SupplyPacket(supply, source, destination)
-        self.list.append(new_packet)
+        self.supply_list.append(new_packet)
 
     def update_list(self):
         # Every tick, we update the travel time of each packet
-        current = self.list.head
+        current = self.supply_list.head
         while current:
             current.data.update_travel_time()
             if current.data.is_delivered():
@@ -44,15 +56,23 @@ class SupplyTracker:
                 # Need to check destination stuff too but for now this is ok
             current = current.next
         
+    def add_hub(self, hub: loc.SupplyHub):
+        self.graph[hub.location.coordinates] = {
+            "source": hub,
+            "sink": []
+        }
 
-class SupplyHub:
-    def __init__(self, location):
-        self.location = location
-        self.supply = 0
-        self.generator = False
+    def add_edges(self, src: loc.Location, dest: loc.Location, cost: int):
+        srcCoord = src.coordinates
+        sink = loc.SupplyHub(dest)
+        self.graph[srcCoord]["sink"].append((sink, cost))
+    
 
-    def resupply(self):
-        self.location.army += self.supply
-
-    def consume(self):
-        self.location.army -= self.supply
+    def visualize_graph(self):
+        for source in self.graph:
+            print(source, "-->", end= "")
+            for dest in self.graph[source]["sink"]:
+                print(dest[0].location.coordinates, end = "")
+            print()
+            
+           
