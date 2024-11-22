@@ -5,9 +5,13 @@ This is the AI Algorithms project. The goal is to develop a strategy game AI to 
 ### Development Rules ###
 1. Develop features in a branch, and make commits as small as possible. Pull requests into the main branch needs to be approved by at least on other team member.
 
-2. Follow standard python naming conventions. Snake cases for variable and function names. Camel case for class names.
+2. Follow standard python naming conventions. Snake cases for variable and function names. Camel case for class names. See the google convention for more details.
 
-3. Use `git pull --rebase` when pulling from origin.
+3. Before you make any changes. Pull from `main`. Use `git pull origin --rebase` for this. Then make a separate branch for the feature you're working on.
+
+4. All commits should be as MINIMAL as possible. It's fine if the commit is very small. 
+
+5. Create a PR for that branch and delete the branch right after. We will not have branches for big module implementation. But branches for every features. This is done because many parts of the project is interdependent with each other at very small steps.
 
 ### Components ###
 - `main.py` runs the game across various scenarios for evaluation purposes.
@@ -15,6 +19,7 @@ This is the AI Algorithms project. The goal is to develop a strategy game AI to 
 - `map.py` takes in some arguments and generates a 2D grid map to represent the game map.
 - `army.py` controls the movements of armies and all related mechanics.
 - `supply.py` controls the movement of supplies from generator to hubs and calculate supply lines.
+- `agent.py` controls each agent, of which there are 2 instances of in this map
 
 ### Dependencies ###
 For any new dependencies that might be needed. Make sure to use the virutal environment. To create a virtual environment:
