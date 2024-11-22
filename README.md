@@ -19,6 +19,7 @@ This is the AI Algorithms project. The goal is to develop a strategy game AI to 
 - `map.py` takes in some arguments and generates a 2D grid map to represent the game map.
 - `army.py` controls the movements of armies and all related mechanics.
 - `supply.py` controls the movement of supplies from generator to hubs and calculate supply lines.
+- `locations.py` contains the classes that specific the coordinates information. This information needs to be known by many other modules.
 - `agent.py` controls each agent, of which there are 2 instances of in this map
 
 ### Dependencies ###
