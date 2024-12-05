@@ -15,6 +15,13 @@ class GameMap:
         self.hubs = []
 
     def generate_map_info(self, n_hubs: int, n_generators: int, supply_tracker: sp.SupplyTracker):
+        """
+        Generate the map information. This will include the supply hubs, supply generators, and the terrain types
+
+        :param n_hubs: The number of supply hubs
+        :param n_generators: The number of supply generators
+        :param supply_tracker: The supply tracker object to keep track of the supply hubs and edges
+        """
         n_hubs_root = int(n_hubs ** 0.5)
 
         # Generate supply hubs
@@ -39,6 +46,13 @@ class GameMap:
 
 
     def generate_roads(self, n_hubs_root: int, supply_tracker: sp.SupplyTracker, direction: str):
+        """
+        Generate the roads connecting the supply hubs. Currently simply a grid of roads where intersections are supply hubs
+
+        :param n_hubs_root: The square root of the number of supply hubs
+        :param supply_tracker: The supply tracker object to keep track of the supply hubs and edges
+        :param direction: The direction of the road, either "vertical" or "horizontal"
+        """
         for i in range(1, n_hubs_root + 1):
             # Determine fixed axis and range for traversal
             if direction == "vertical":
@@ -81,6 +95,13 @@ class GameMap:
                     current_cell.supply_path = True
 
     def create_generators(self, n_generators: int): 
+        """
+        Create the supply generators. These are the locations where supply is generated and sent to the supply hubs.
+        Currently we are generating them in local opposite quadrant of the map.
+
+        :param n_generators: The number of supply generators
+        """
+         
         # Generate supply generators, direction is either north-south or west-east
         direction = random.choice([0,1])
         direction = 1
@@ -106,6 +127,10 @@ class GameMap:
                 self.map[y][x].controller = i+1
 
     def set_terrains(self):
+        """
+        Set the terrains of the locations. This will be used to determine the path cost of moving through the location.
+        """
+
         # Create a list of terrains excluding roads and assign weight
         exclude_road = [terrain for terrain in loc.TerrainType if terrain != loc.TerrainType.ROAD]
         weights = []
@@ -139,7 +164,6 @@ class GameMap:
         This function will print the game map as a grid of coordinates
         Do not use this function for large maps.
         """
-
         for row in self.map:
             for location in row:
                 print(location.coordinates, end = " ")
@@ -147,6 +171,10 @@ class GameMap:
 
 
     def display_map(self):
+        """
+        This function will print the game map as a grid of characters.
+        Not useful for very large maps.
+        """
         for row in self.map:
             for location in row:
        
