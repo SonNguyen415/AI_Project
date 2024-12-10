@@ -9,12 +9,11 @@ ATTRITION_DEATHS = 100
 
 class Army:
     def __init__(self, troops, position, supply):
-        self.troops = troops
+    		self.troops = troops
         self.position = position
         self.supply = supply
 
     #Supplies Methods
-
     def consume_supplies(self):
         """
         Reduces the number of supplies based on the number of troops
@@ -28,8 +27,7 @@ class Army:
         if self.supply == 0:
             self.troops = max(0, self.troops - ATTRITION_DEATHS)
 
-    #Combat Methods
-
+    # Combat Methods
     def combat(self, damage):
         """
         Reduces the number of troops based on the inputted damage
@@ -45,11 +43,10 @@ class Army:
         else:
             return False
         
-    #Movement Methods
-
+    # Movement Methods
     def get_legal_moves(self, map: map.GameMap):
         """
-        Return all the possible legal moves the army can go from this position
+        Returns all legal moves for the army from its current position.
         """
         
         move_list = list()
@@ -64,9 +61,36 @@ class Army:
         
         return move_list
     
+    
+    
+    # This is in the wrong place and should be at states
     def generate_successor(self, new_position):
+        x, y = self.position
+        directions = {
+            Directions.UP: (x, y - 1),
+            Directions.DOWN: (x, y + 1),
+            Directions.LEFT: (x - 1, y),
+            Directions.RIGHT: (x + 1, y)
+        }
+
+        legal_moves = []
+        for direction, (nx, ny) in directions.items():
+            #make sure position in bounds
+            if (nx < 0 or nx > self.state.width) or (ny < 0 or ny > self.state.height)
+                continue
+
+            #get candidate position
+            location = self.state.get_location(nx, ny)
+
+            #check to see if location is passible and no army is already at the position
+            if location.LocationType != LocationType.IMPASSABLE and location.army == 0:
+                legal_moves.append(direction)
+
+        return legal_moves
+
+
+    def move(self):
         """
         Generate successor given action
         """
-
         return Army(self.troops, new_position, self.supply)
