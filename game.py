@@ -2,17 +2,20 @@
 This file will contain the main logic for the game flow
 """
 import map 
-import supply as sp
 
 
         
 class Game:
-    def __init__(self, width, height, n_hubs, n_generators) -> None:
+    def __init__(self, width, height) -> None:
         self.game_map = map.GameMap(width, height)
         self.width = width
         self.height = height
-        self.hub_graph = sp.SupplyTracker()
-        self.game_map.generate_map_info(n_hubs, n_generators, self.hub_graph)
+        #supplies: by default, and odd amount of supplies (approx width) are scattered randomly on the map. may break on map size 1, fix later.
+        if self.width % 2 == 0:
+            self.n_supply = width+1
+        else:
+            self.n_supply = width
+        self.game_map.generate_map_info(self.n_supply)
     
     def play(self):
         print("Game started")
