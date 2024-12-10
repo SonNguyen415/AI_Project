@@ -20,7 +20,6 @@ class Game:
     def play(self):
         print("Game started")
         self.game_map.display_map()
-        self.hub_graph.visualize_graph()
         print("Game ended")
     
     class Directions:
