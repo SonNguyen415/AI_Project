@@ -23,12 +23,9 @@ class Location:
         self.location_type = location_type
         self.coordinates = coordinates
         
-        self.agent = 0
         self.supply = self.cache_value()
         self.visited = False
         self.path_cost = self.set_path_cost()
-        self.supply_path = False
-        self.controller = 0
 
     def cache_value(self):
         if self.location_type == LocationType.SUPPLY_CACHE:
