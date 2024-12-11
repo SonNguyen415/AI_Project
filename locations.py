@@ -23,17 +23,12 @@ class Location:
         self.location_type = location_type
         self.coordinates = coordinates
         
-        self.supply = self.cache_value()
-        self.visited = False
+        self.supply = 100
         self.path_cost = self.set_path_cost()
 
-    def cache_value(self):
-        if self.location_type == LocationType.SUPPLY_CACHE:
-            if self.visited == False:
-                return 100
-            else:
-                return 0
-        return 0
+    def delete_cache(self):
+        self.supply = 0
+        self.location_type = LocationType.PASSABLE
 
     def set_path_cost(self):
         match self.terrain:

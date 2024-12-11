@@ -1,7 +1,7 @@
 """
 This file will contain the main logic for the game flow
 """
-import map 
+import map , manager
 
 
 
@@ -39,9 +39,26 @@ class Game:
         else:
             self.n_supply = width
         self.game_map.generate_map_info(self.n_supply)
-    
+
+        # Initialize agents and train them
+
+        # Initialize armies for agents
+        self.manager = manager.Manager(self.game_map, [], [])
+
     def play(self):
         print("Game started")
         self.game_map.display_map()
+
+        while not self.manager.is_goal():
+            # Agent A: Pop from list of state, action pair
+
+            # Agent B: Pop from list of state, action pair
+
+            # Calculate combat if there's collision
+            self.manager.combat()
+
+            # Calculate resupply via cache. Delete cache on consumption
+            self.manager.resupply()
+        
         print("Game ended")
     
