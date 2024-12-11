@@ -11,6 +11,8 @@ class Manager:
         for army1 in self.armies1:
             for army2 in self.armies2:
                 if army1.position == army2.position:
+                
+                    # Placeholder: Warren changes
                     if army1.supply > army2.supply:
                         self.armies2.remove(army2)
                     elif army1.supply < army2.supply:   
@@ -19,6 +21,7 @@ class Manager:
     
     def resupply(self):
         for army1 in self.armies1:
+            # Update to make a list of caches so we don't have to iterate through the entire map
             for supply_loc in self.map.supply:
                 if army1.position == supply_loc.coordinates:
                     army1.consume_cache(supply_loc.supply)
