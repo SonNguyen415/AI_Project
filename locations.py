@@ -26,27 +26,27 @@ class Location:
         self.agent = 0
         self.supply = self.cache_value()
         self.visited = False
-        self.path_cost = 2
+        self.path_cost = self.set_path_cost()
         self.supply_path = False
         self.controller = 0
 
     def cache_value(self):
         if self.location_type == LocationType.SUPPLY_CACHE:
-            if visited == False:
+            if self.visited == False:
                 return 100
             else:
                 return 0
         return 0
 
-    def calculate_path_cost(self):
+    def set_path_cost(self):
         match self.terrain:
             case TerrainType.FLATLAND:
-                return 1
+                self.path_cost = 1
             case TerrainType.HIGHLAND:
-                return 2
+                self.path_cost = 2
             case TerrainType.FORESTS:
-                return 3
+                self.path_cost = 3
             case TerrainType.MOUNTAIN:
-                return 4
+                self.path_cost = 4
             case TerrainType.WATER:
-                return 5
+                self.path_cost = 5

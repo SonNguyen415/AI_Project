@@ -24,8 +24,7 @@ class GameMap:
         self.generate_supply(n_supply)
         self.set_terrains()
 
-    #supplies scattered around the map. By default, there will be width+1 supplies scattered randomly
-    
+    # Supplies scattered around the map. By default, there will be width+1 supplies scattered randomly
     def generate_supply(self, n_supply: int):
         # Generate supply caches (needs to be redone)
         chosen_positions = set()
@@ -80,6 +79,14 @@ class GameMap:
                         if random.random() <= 0.25:
                             location.location_type = loc.LocationType.IMPASSABLE
 
+
+    def get_path_cost(self, old_pos: int, new_pos: int):
+        """
+        Get the path cost of a location
+        """
+        total_cost = self.map[old_pos[0]][old_pos[1]].path_cost + self.map[new_pos[0]][new_pos[1]].path_cost
+        return total_cost
+    
     def display_map_coordinates(self):
         """
         This function will print the game map as a grid of coordinates
