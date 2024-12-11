@@ -84,6 +84,7 @@ class GameMap:
         """
         Get the path cost of a location
         """
+
         total_cost = self.map[old_pos[0]][old_pos[1]].path_cost + self.map[new_pos[0]][new_pos[1]].path_cost
         return total_cost
     

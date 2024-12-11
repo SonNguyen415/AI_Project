@@ -92,3 +92,4 @@ class Army:
             new_troops = 0
 
         return Army(new_troops, new_position, new_supply)
+
