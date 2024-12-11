@@ -4,30 +4,27 @@ This file will contain logic for the army system. This includes movement
 
 import map
 
-MAX_ARMY_SUPPLY = 100000
-ATTRITION_DEATHS = 100
+MAX_TROOPS = 1000
+MAX_ARMY_SUPPLY = MAX_TROOPS*10
 
 class Army:
     def __init__(self, troops, position, supply):
-    		self.troops = troops
+        self.troops = troops
         self.position = position
         self.supply = supply
 
-    #Supplies Methods
-    def consume_supplies(self):
+    def attrition(self):
         """
         Reduces the number of supplies based on the number of troops
         """
         self.supply = max(0, self.supply - self.troops)
 
-    def attrition(self):
+    def consume_cache(self, cache_size):
         """
-        Reduces the number of troops if there is no supplies
+        Consume the cache. For now we will consume the cache in its entirely, the remaining will be wasted
         """
-        if self.supply == 0:
-            self.troops = max(0, self.troops - ATTRITION_DEATHS)
+        self.supply = min(MAX_ARMY_SUPPLY, self.supply + cache_size)
 
-    # Combat Methods
     def combat(self, damage):
         """
         Reduces the number of troops based on the inputted damage
@@ -38,10 +35,7 @@ class Army:
         """
         Returns true if there exists no more troops in the army
         """
-        if self.troops == 0:
-            return True
-        else:
-            return False
+        return self.troops == 0
         
     # Movement Methods
     def get_legal_moves(self, map: map.GameMap):
