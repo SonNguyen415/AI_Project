@@ -22,7 +22,7 @@ class Location:
         self.terrain = terrain
         self.location_type = location_type
         self.coordinates = coordinates
-        self.supply = 100 # Change later
+        # self.supply = 100 # Change later
         self.path_cost = self.set_path_cost()
 
     def delete_cache(self):

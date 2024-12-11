@@ -1,18 +1,19 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army
-from game import Directions
+import army, map
 
 
 START_ARMY_SZ = 20000
 
 
-class State: 
+class BeliefState: 
     def __init__(self):
+        # A copy of our current armies, which includes their observations
         self.armies = list() 
         self.visited = 0
         self.won = 0
+
 
     def win_rate(self):
         if self.visited == 0:
@@ -20,11 +21,21 @@ class State:
         return self.won / self.visited
     
 
+    
+
+    
+
 class Agent:
-    def __init__(self, id, depth, iterations):
+    def __init__(self, id, iterations, n_armies):
         self.id = id #index of player
-        self.armies = [army.Army(START_ARMY_SZ)]
-        self.depth = depth # Rollout depth
+
+        self.q_table = dict()
+
+        # The actual armies (not for simulation purposes)
+        self.armies = [START_ARMY_SZ] * n_armies
+        self.cur_state = BeliefState()
+        
+
         self.iterations = iterations # Number of iterations for MCTS
 
     def monte_carlo(self):

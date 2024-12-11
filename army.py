@@ -13,6 +13,9 @@ class Army:
         self.troops = troops
         self.position = position
         self.supply = supply
+        self.neighbors = [[0, 0, 0],
+                          [0, -1, 0],
+                          [0, 0, 0]]
 
     #Supplies Methods
 
