@@ -3,7 +3,6 @@ This file will contain the main logic for the game flow
 """
 import map, manager, army, agent as ag
 
-NUM_ARMIES = 1
 ITERATIONS = 1000
 class Directions:
     NORTH = 'North'
@@ -53,11 +52,11 @@ class Game:
             for agent in self.agents:
                 agent.monte_carlo(self.state)
 
-            # Each agent takes an action
+            # Get successor states of agent actions
 
-            # Calculate combat if there's collision. 
+            # Calculate combat if there's collision. This will also update the state result
+            self.state.combat(self.agents)
 
-            # Update state of each agent
             pass
             
         

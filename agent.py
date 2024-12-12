@@ -1,25 +1,15 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, map
+import army, map, state
 
 
-START_ARMY_SZ = 20000
-N_ARMIES = 1
-    
 
 class Tree:
     def __init__(self, root):
         self.root = root
 
 
-class State: 
-    def __init__(self, agents):
-        # Current armies
-        self.armies = dict()
-        for agent in agents:
-            self.armies[agent] = [START_ARMY_SZ] * N_ARMIES
-    
 
 class Node:
     def __init__(self, state: State):
@@ -45,7 +35,7 @@ class Agent:
         # Root is the current state
         root = Node(state)
 
-        for i in range(self.iterations):
+        for _ in range(self.iterations):
             # Select state until we reach a leaf node
             node = root
             while len(node.successors) > 0:
@@ -79,22 +69,22 @@ class Agent:
         Given a node, select the next node from the list of successors
         """
         # I'm just going with first successor for now
-        return state.successors[0]
+        return node.successors[0]
 
-    def get_legal_actions(self, state):
+    def get_legal_actions(self, node: Node):
         """
-        Returns all successor states given a current state
+        Returns all successor nodes given a current node 
         :param state: The current state of all armies of the agent
         :return: A list of (army, actions) tuples wheere actions is a list of legal actions the army can take
         """
         return
     
 
-    def get_successors(self, state: BeliefState):
+    def get_successors(self, node: Node):
         """
-        Given a belief state, return all possible successor states
-        :param state: The current belief state
-        :return: The successor state
+        Given a node, return all possible successor nodes
+        :param state: The current node
+        :return: The successor nodes
         """
 
         # Get the possible army positions of all possible actions
