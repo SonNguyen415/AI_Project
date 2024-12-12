@@ -20,7 +20,7 @@ class State:
         """
         Returns all successor nodes given a current node 
         :param state: The current state of all armies of the agent
-        :return: A list of list of (army, actions) tuples where actions is a list of legal actions the army can take
+        :return: A list of list of (army, action) tuples where action is the action the army can take and each list being a possible successor.
         """
 
         # Retrieves the list of armies
@@ -43,7 +43,7 @@ class State:
     def get_successors(self, army_new_positions: list):
         """
         Given a list of army, position tuples, return successor state
-        :param state: The list of army, position tuples
+        :param state: The list of (army, position) tuples
         :return: The successor state
         """
 

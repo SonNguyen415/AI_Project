@@ -1,7 +1,7 @@
 """
 This file will contain the main logic for the game flow
 """
-import game_map, manager, army, agent as ag
+import game_map, army, agent as ag
 
 ITERATIONS = 1000
 class Directions:
@@ -53,6 +53,7 @@ class Game:
                 agent.monte_carlo(self.state)
 
             # Get successor states of agent actions
+            
 
             # Calculate combat if there's collision. This will also update the state result
             self.state.combat(self.agents)
