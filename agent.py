@@ -5,7 +5,7 @@ import army, map
 
 
 START_ARMY_SZ = 20000
-
+N_ARMIES = 1
     
 
 class Tree:
@@ -13,10 +13,18 @@ class Tree:
         self.root = root
 
 
-class BeliefState: 
-    def __init__(self):
-        # A copy of our current armies, which includes their observations
-        self.armies = list() 
+class State: 
+    def __init__(self, agents):
+        # Current armies
+        self.armies = dict()
+        for agent in agents:
+            self.armies[agent] = [START_ARMY_SZ] * N_ARMIES
+    
+
+class Node:
+    def __init__(self, state: State):
+        # A monte carlo node 
+        self.state = state
         self.visited = 0
         self.won = 0
         self.parent = None
@@ -28,25 +36,14 @@ class BeliefState:
         return self.won / self.visited
    
 
-
-
 class Agent:
-    def __init__(self, id, iterations, n_armies):
-        self.id = id #index of player
-
-        # These values identify the current state of the agent
-        self.armies = [START_ARMY_SZ] * n_armies
-        self.enemy_count = n_armies
-        self.observations = [] # List of locations
-
+    def __init__(self, iterations):        
         # Number of iterations for MCTS
         self.iterations = iterations 
 
-    def monte_carlo(self):       
-        # Make a copy of the current belief state as root
-        root = BeliefState() 
-        root.armies = self.armies.copy()
-        # We'll also need to store all the states we've visited
+    def monte_carlo(self, state: State):       
+        # Root is the current state
+        root = Node(state)
 
         for i in range(self.iterations):
             # Select state until we reach a leaf node
@@ -67,26 +64,19 @@ class Agent:
             # Back-propagate
             pass
 
+        self.take_action(root.successors)
         return 
     
 
-
-    def update_state(self):
+    def take_action(self, successor_nodes: Node):
         """
-        Update the current belief state for the next position of enemy of the agent based on observation
+        Given a list of successor nodes, choose successor based on win rate, return the corresponding action
         """
-        # For each army, get the legal moves and generate the successor states
-        for army in self.cur_state.armies:
-            legal_moves = army.get_army_legal_moves()
-            for move in legal_moves:
-                successor = army.generate_army_successor(move)
-                self.cur_state.successors.append(successor)
+        pass
 
-        return
-
-    def select_state(self, state: BeliefState):
+    def select_node(self, node: Node):
         """
-        Given a state, select the next state from the list of successors
+        Given a node, select the next node from the list of successors
         """
         # I'm just going with first successor for now
         return state.successors[0]

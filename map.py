@@ -11,10 +11,10 @@ class GameMap:
         self.width = width
         self.height = height
         self.map = [[loc.Location(loc.TerrainType.FLATLAND, loc.LocationType.PASSABLE, (y, x)) for x in range(width)] for y in range(height)]
-        self.set_terrains()
+        self.generate_map_info(10)
 
         
-    def generate_map_info(self):
+    def generate_map_info(self, n_supply: int):
         """
         Generate the map information. This will include the supply hubs, supply generators, and the terrain types
 
@@ -22,7 +22,7 @@ class GameMap:
         :param supply_tracker: The supply tracker object to keep track of the supply hubs and edges
         """
         # Create supply generators and set the terrain of every other locations
-        # self.generate_supply(n_supply)
+        self.generate_supply(n_supply)
         self.set_terrains()
 
     # Supplies scattered around the map. By default, there will be width+1 supplies scattered randomly
