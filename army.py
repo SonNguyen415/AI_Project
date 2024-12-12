@@ -3,10 +3,8 @@ This file will contain logic for the army system. This includes movement
 """
 
 import game
-import map
+import game_map
 import locations
-
-MAX_ARMY_SUPPLY = 100000
 
 class Army:
     def __init__(self, troops, position):
@@ -15,7 +13,7 @@ class Army:
         
     #Movement Methods
 
-    def get_army_legal_moves(self, map: map.GameMap):
+    def get_army_legal_moves(self, game_map: game_map.GameMap):
         """
         Returns all the possible legal moves the army can go from this position
         :Returns a list of tuples y, x
@@ -34,11 +32,11 @@ class Army:
 
         for direction, (nx, ny) in directions.items():
             # In-Bounds Legality Check
-            if (nx < 0 or nx >= map.width) or (ny < 0 or ny >= map.height):
+            if (nx < 0 or nx >= game_map.width) or (ny < 0 or ny >= game_map.height):
                 continue
 
             # Get Map Location
-            new_position = map.map[nx][ny]
+            new_position = game_map.map[nx][ny]
 
             # Passability Check
             if new_position.location_type != locations.LocationType.IMPASSABLE:
@@ -47,14 +45,14 @@ class Army:
         return legal_moves
         
     
-    def generate_army_successor(self, map: map.GameMap, new_position: tuple):
+    def generate_army_successor(self, game_map: game_map.GameMap, new_position: tuple):
         """
         Returns the successor state of army based on action
         :Returns Army class
         """
 
         # Attrition
-        new_troops = max(0, self.supply - 50*(map.get_path_cost(self.position, new_position)))
+        new_troops = max(0, self.troops - 50*(game_map.get_path_cost(self.position, new_position)))
 
         if new_troops == 0:
             return None

@@ -1,7 +1,7 @@
 """
 This file will contain the main logic for the game flow
 """
-import map, manager, army, agent as ag
+import game_map, manager, army, agent as ag
 
 ITERATIONS = 1000
 class Directions:
@@ -29,7 +29,7 @@ class Directions:
         
 class Game:
     def __init__(self, width, height) -> None:
-        self.game_map = map.GameMap(width, height)
+        self.map = game_map.GameMap(width, height)
         self.width = width
         self.height = height
 
@@ -40,12 +40,12 @@ class Game:
             self.agents.append(agent)
 
         # Initialize state
-        self.state = ag.State(self.agents)
+        self.state = ag.State(self.agents, self.map)
 
 
     def play(self):
         print("Game started")
-        self.game_map.display_map_coordinates()
+        self.map.display_map_coordinates()
         
         while True:
             # Each agent performs Monte Carlo rooted at current state

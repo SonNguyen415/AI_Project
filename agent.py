@@ -1,18 +1,85 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, map, state, itertools
+import army, game_map, itertools, random
 
 
+START_ARMY_SZ = 20000
+N_ARMIES = 1
+    
 
-class Tree:
-    def __init__(self, root):
-        self.root = root
+class State: 
+    def __init__(self, agents, game_map: game_map.GameMap):
+        # Current armies
+        self.armies = dict()
+        self.map = game_map
+        for agent in agents:
+            self.armies[agent] = [START_ARMY_SZ] * N_ARMIES
 
+    def get_legal_actions(self):
+        """
+        Returns all successor nodes given a current node 
+        :param state: The current state of all armies of the agent
+        :return: A list of list of (army, actions) tuples where actions is a list of legal actions the army can take
+        """
 
+        # Retrieves the list of armies
+        army_list = self.armies
+
+        # Initialize the army legal moves list
+        army_legal_moves = list()
+
+        # Loop through the army list to append all army legal moves
+        for army in army_list:
+            army_legal_moves.append((army, army.get_army_legal_moves(self.map)))
+
+        # Create list of tuple permutations
+        legal_moves = list(itertools.product(*army_legal_moves))
+
+        # Return legal moves as list
+        return list(map(list, legal_moves))
+    
+
+    def get_successors(self, army_new_positions: list):
+        """
+        Given a list of army, position tuples, return successor state
+        :param state: The list of army, position tuples
+        :return: The successor state
+        """
+
+        # Initialize list for new army classes
+        armies = []
+
+        # Loop through the new positions list
+        for army in army_new_positions:
+            # Append the successor of the army given the new position
+            armies.append(army[0].generate_army_successor(self.map, army[1]))
+
+        # Return list of successor armies
+        return armies
+
+    
+    def combat(self, agents: list):
+        for army0 in self.armies[agents[0]]:
+            for army1 in self.armies[agents[1]]:
+                if army0.position == army1.position:
+                    probability0 = army0.troops/(army0.troops + army1.troops)
+                    probability1 = army1.troops/(army0.troops + army1.troops)
+                    choice = random.choices([0, 1], [probability0, probability1])
+                    if choice == 0:
+                        self.armies[agents[1]].remove(army1)
+                    else:
+                        self.armies[agents[0]].remove(army0)
+
+        
+    def is_terminate(self):
+        for agent_armies in self.armies:
+            if len(agent_armies) == 0:
+                return True
+        return False
 
 class Node:
-    def __init__(self, state: state.State):
+    def __init__(self, state: State):
         # A monte carlo node 
         self.state = state
         self.visited = 0
@@ -70,45 +137,3 @@ class Agent:
         """
         # I'm just going with first successor for now
         return node.successors[0]
-
-    def get_legal_actions(self, node: Node, map: map.GameMap):
-        """
-        Returns all successor nodes given a current node 
-        :param state: The current state of all armies of the agent
-        :return: A list of list of (army, actions) tuples where actions is a list of legal actions the army can take
-        """
-
-        # Retrieves the list of armies
-        army_list = node.state.armies
-
-        # Initialize the army legal moves list
-        army_legal_moves = list()
-
-        # Loop through the army list to append all army legal moves
-        for army in army_list:
-            army_legal_moves.append((army, army.get_army_legal_moves(map)))
-
-        # Create list of tuple permutations
-        legal_moves = list(itertools.product(*army_legal_moves))
-
-        # Return legal moves as list
-        return list(map(list, legal_moves))
-    
-
-    def get_successors(self, map: map.GameMap, army_new_positions: list):
-        """
-        Given a list of army, position tuples, return successor state
-        :param state: The list of army, position tuples
-        :return: The successor state
-        """
-
-        # Initialize list for new army classes
-        armies = []
-
-        # Loop through the new positions list
-        for army in army_new_positions:
-            # Append the successor of the army given the new position
-            armies.append(army[0].generate_army_successor(map, army[1]))
-
-        # Return list of successor armies
-        return armies
