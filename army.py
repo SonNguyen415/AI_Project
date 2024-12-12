@@ -9,40 +9,9 @@ import locations
 MAX_ARMY_SUPPLY = 100000
 
 class Army:
-    def __init__(self, troops, position, supply):
+    def __init__(self, troops, position):
         self.troops = troops
         self.position = position
-        self.supply = supply
-
-    # Supplies Methods
-    def attrition(self):
-        """
-        Reduces the number of supplies based on the number of troops
-        """
-        self.supply = max(0, self.supply - self.troops)
-
-        if self.supply == 0:
-            self.troops = 0
-
-    
-    def consume_cache(self, cache_size):
-        """
-        Consume the cache. For now we will consume the cache in its entirely, the remaining will be wasted
-        """
-        self.supply = min(MAX_ARMY_SUPPLY, self.supply + cache_size) 
-
-    # Combat Methods
-    def combat(self, damage):
-        """
-        Reduces the number of troops based on the inputted damage
-        """
-        self.troops = max(0, self.troops - damage)
-
-    def routed(self):
-        """
-        Returns true if there exists no more troops in the army
-        """
-        return self.troops == 0
         
     #Movement Methods
 
@@ -64,14 +33,14 @@ class Army:
         legal_moves = list()
 
         for direction, (nx, ny) in directions.items():
-            #make sure position in bounds
+            # In-Bounds Legality Check
             if (nx < 0 or nx >= map.width) or (ny < 0 or ny >= map.height):
                 continue
 
-            #get candidate position
+            # Get Map Location
             new_position = map.map[nx][ny]
 
-            #check to see if location is passible and no army is already at the position
+            # Passability Check
             if new_position.location_type != locations.LocationType.IMPASSABLE:
                 legal_moves.append(direction)
 
@@ -83,11 +52,13 @@ class Army:
         Returns the successor state of army based on action
         :Returns Army class
         """
-        new_supply = max(0, self.supply - 50*(map.get_path_cost(self.position, new_position)))
 
-        new_troops = self.troops
-        if new_supply == 0:
-            new_troops = 0
+        # Attrition
+        new_troops = max(0, self.supply - 50*(map.get_path_cost(self.position, new_position)))
 
-        return Army(new_troops, new_position, new_supply)
+        if new_troops == 0:
+            return None
+
+        return Army(new_troops, new_position)
+    
 
