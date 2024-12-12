@@ -18,9 +18,9 @@ class State:
 
     def get_legal_actions(self):
         """
-        Returns all successor nodes given a current node 
-        :param state: The current state of all armies of the agent
-        :return: A list of list of (army, action) tuples where action is the action the army can take and each list being a possible successor.
+        Returns possible agent actions, which comes in the forms of permutations of army actions
+        :param state: The current state of all armies
+        :return: A list of list of (army, position) tuples where position is the new position an army can take
         """
 
         # Retrieves the list of armies
@@ -40,18 +40,18 @@ class State:
         return list(map(list, legal_moves))
     
 
-    def get_successors(self, army_new_positions: list):
+    def get_successor(self, army_position_pairs: list):
         """
-        Given a list of army, position tuples, return successor state
-        :param state: The list of (army, position) tuples
-        :return: The successor state
+        Given a list of (army, position) tuples, return successor state
+        :param list: The list of (army, position) tuples
+        :return: The successor state corresponding to the action
         """
 
         # Initialize list for new army classes
         armies = []
 
         # Loop through the new positions list
-        for army in army_new_positions:
+        for army in army_position_pairs:
             # Append the successor of the army given the new position
             armies.append(army[0].generate_army_successor(self.map, army[1]))
 
