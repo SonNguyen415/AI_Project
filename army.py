@@ -13,12 +13,8 @@ class Army:
         self.troops = troops
         self.position = position
         self.supply = supply
-        self.neighbors = [[0, 0, 0],
-                          [0, -1, 0],
-                          [0, 0, 0]]
 
-    #Supplies Methods
-
+    # Supplies Methods
     def attrition(self):
         """
         Reduces the number of supplies based on the number of troops
@@ -35,8 +31,7 @@ class Army:
         """
         self.supply = min(MAX_ARMY_SUPPLY, self.supply + cache_size) 
 
-    #Combat Methods
-
+    # Combat Methods
     def combat(self, damage):
         """
         Reduces the number of troops based on the inputted damage
