@@ -16,7 +16,7 @@ scenario3 = {
     "width": 10,
     "height": 10,
     "iterations": 1000,
-    "start_army": [1000, 3000],
+    "start_army": [100, 300],
 }
 
 if __name__ == '__main__':
