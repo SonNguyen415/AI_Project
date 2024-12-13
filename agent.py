@@ -147,7 +147,7 @@ class Node:
    
 
 class Agent:
-    def __init__(self, id, iterations):        
+    def __init__(self, id: int, iterations: int):        
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
@@ -161,7 +161,7 @@ class Agent:
             else:
                 enemy_count += army.troops
                 
-        return 1 if our_count > enemy_count else 0
+        return our_count > enemy_count 
                 
     
     def rollout(self, node: Node):
@@ -175,7 +175,7 @@ class Agent:
         
         return self.is_win(node)
     
-    def UCB1(self, node: Node, parent_visited):
+    def UCB1(self, node: Node, parent_visited: int):
         return node.win_rate() + (2*math.sqrt((math.log(parent_visited)/node.visited)))
     
     def get_enemy_armies(self, node: Node):
@@ -215,14 +215,14 @@ class Agent:
 
         return max_UCB1_node
     
-    def backpropagate(self, node: Node, val):
+    def backpropagate(self, node: Node, val: int):
         while node.parent != None:
-            node.visited +=1
-            node.won +=1
+            node.visited += 1
+            node.won += val
             node = node.parent
             
-        node.visited +=1
-        node.won +=1
+        node.visited += 1
+        node.won += val
 
 
 
@@ -242,16 +242,11 @@ class Agent:
                 # No successors, we're at terminate. Need to check if we won or lost here
                 continue
                 
-            # Select one of the leaf nodes 
-            if len(node.successors) > 1:
-                node = node.successors[random.randint(0, len(node.successors))]
-
-
-            # Rollout
-            
-
+            # Select one of the leaf nodes and rollout
+            self.select_node(node)
+            win = self.rollout(node)
+    
             # Back-propagate
-            pass
+            self.backpropagate(node, win)
 
-        self.take_action(root.successors)
-        return   
+        return self.select_node(root)
