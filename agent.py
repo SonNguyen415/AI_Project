@@ -1,7 +1,7 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, game_map, itertools, random
+import army, game_map, itertools, random, math
     
 
 class State: 
@@ -126,6 +126,8 @@ class State:
             if len(agent_armies) == 0:
                 return True
         return False
+    
+
 
 class Node:
     def __init__(self, state: State):
@@ -147,6 +149,63 @@ class Agent:
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
+    
+    def rollout(self, node: Node):
+        terminal = False
+        while not terminal:
+            actions = node.state.get_legal_actions(node.state.armies)
+            action = actions[random.randint(0, len(actions))]
+            node.state.get_successor(action)
+            node.state.combat(node.state.armies)
+            terminal = node.state.is_terminate()
+        
+        return 0 if len(node.state.armies) == 0 else 1
+    
+    def UCB1(self, node: Node, parent_visited):
+        return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+    
+    def get_enemy_armies(self, node: Node):
+        armies = []
+        for army in node.state.armies:
+            if army.agent.id != self.id:
+                armies.append(army)
+
+        return armies
+    
+    def expand(self, node: Node):
+        actions = node.state.get_legal_actions(node.state.armies)
+        succesor = []
+        for action in actions:
+            node.state.get_successor(action)
+            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies())) # needs to be enermy armies
+
+            # skipping get_combat_successor for now
+            succesor.append(Node(node.state.get_successor(action), 0, 0, node, []))
+        
+        return succesor
+
+    def select_node(self, node: Node):
+        """
+        Given a node, select the next node from the list of successors
+        """
+        max_UCB1_node = node.successors[0]
+        max_UCB1 = self.UCB1(node.successors[0], node.visited)
+        for successor in node.successors:
+            if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1_node = successor
+
+        return max_UCB1_node
+    
+    def backpropagate(self, node: Node, val):
+        while node.parent != None:
+            node.visited +=1
+            node.won +=1
+            node = node.parent
+            
+        node.visited +=1
+        node.won +=1
+
+
 
     def monte_carlo(self, state: State):       
         # Root is the current state
@@ -154,9 +213,7 @@ class Agent:
 
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            node = root
-            while len(node.successors) > 0:
-                node = self.select_state(node)
+            node = self.select_state(root)
 
             # Expand the leaf node
             node.successors = self.get_successors()
@@ -175,17 +232,11 @@ class Agent:
         return 
     
 
-    def take_action(self, successor_nodes: Node):
-        """
-        Given a list of successor nodes, choose successor based on win rate, return the corresponding action
-        """
-        pass
+    # def take_action(self, successor_nodes: Node):
+    #     """
+    #     Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
+    #     """
+    #     pass
 
-    def select_node(self, node: Node):
-        """
-        Given a node, select the next node from the list of successors
-        """
-        # I'm just going with first successor for now
-        return node.successors[0]
     
     
