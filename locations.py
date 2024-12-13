@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class TerrainType(Enum):
     WATER = 1
     FLATLAND = 2
