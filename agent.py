@@ -9,12 +9,12 @@ N_ARMIES = 1
     
 
 class State: 
-    def __init__(self, agents, game_map: game_map.GameMap):
+    def __init__(self, agents: list, game_map: game_map.GameMap):
         # Current armies
         self.armies = dict()
         self.map = game_map
         for agent in agents:
-            self.armies[agent] = [START_ARMY_SZ] * N_ARMIES
+            self.armies[agent.id] = [START_ARMY_SZ] * N_ARMIES
 
     def get_legal_actions(self):
         """
@@ -60,8 +60,8 @@ class State:
 
     
     def combat(self, agents: list):
-        for army0 in self.armies[agents[0]]:
-            for army1 in self.armies[agents[1]]:
+        for army0 in self.armies[0]:
+            for army1 in self.armies[1]:
                 if army0.position == army1.position:
                     probability0 = army0.troops/(army0.troops + army1.troops)
                     probability1 = army1.troops/(army0.troops + army1.troops)
@@ -94,9 +94,10 @@ class Node:
    
 
 class Agent:
-    def __init__(self, iterations):        
+    def __init__(self, id, iterations):        
         # Number of iterations for MCTS
         self.iterations = iterations 
+        self.id = id
 
     def monte_carlo(self, state: State):       
         # Root is the current state
@@ -137,3 +138,5 @@ class Agent:
         """
         # I'm just going with first successor for now
         return node.successors[0]
+    
+    
