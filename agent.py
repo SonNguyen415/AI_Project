@@ -130,11 +130,13 @@ class State:
 
 
 class Node:
-    def __init__(self, state: State):
+    def __init__(self, state: State, action, p_occur):
         # A monte carlo node 
         self.state = state
         self.visited = 0
         self.won = 0
+        self.action = action
+        self.p_occur = p_occur
         self.parent = None
         self.successors = list()
 
@@ -174,15 +176,21 @@ class Agent:
     
     def expand(self, node: Node):
         actions = node.state.get_legal_actions(node.state.armies)
-        succesor = []
+        successors = list()
         for action in actions:
-            node.state.get_successor(action)
-            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies())) # needs to be enermy armies
+            successor = node.state.get_successor(action)
+            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies()))
+            combat_successors = node.state.combat_proposition(successor.armies, p_occur)
+            if (len(combat_successors) == 0):
+                successors.append(Node(successor, action, p_occur))
+            else:
+                for combat_successor in combat_successors:
+                    successors.append(Node(combat_successor[0], action, combat_successor[1]))
 
-            # skipping get_combat_successor for now
-            succesor.append(Node(node.state.get_successor(action), 0, 0, node, []))
+        for success in successors:
+            node.successors.append(success)
         
-        return succesor
+        return successors
 
     def select_node(self, node: Node):
         """
