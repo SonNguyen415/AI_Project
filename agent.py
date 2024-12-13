@@ -235,11 +235,15 @@ class Agent:
             successor = node.state.get_successor(action)
             p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies(node)))
             combat_successors = node.state.combat_proposition(successor.armies, p_occur)
+            agent_action = list()
+            for act in action:
+                if act[0].agent.id == self.id:
+                    agent_action.append(act)
             if (len(combat_successors) == 0):
-                successors.append(Node(successor, action, p_occur))
+                successors.append(Node(successor, agent_action, p_occur))
             else:
                 for combat_successor in combat_successors:
-                    successors.append(Node(combat_successor[0], action, combat_successor[1]))
+                    successors.append(Node(combat_successor[0], agent_action, combat_successor[1]))
 
         return successors
 
@@ -314,6 +318,6 @@ class Agent:
         
         # Best action is action with highest utility
         best_action = max(total_utils, key=total_utils.get)
-        result = state.get_successor(best_action)
+        result = state.get_successor(best_action).armies
         return result
 
