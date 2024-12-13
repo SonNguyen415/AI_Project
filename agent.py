@@ -250,4 +250,6 @@ class Agent:
 
 
         final_selection = self.select_node(root)
+        result = final_selection.get_successor(final_selection.action)
+        return result
 

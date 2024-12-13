@@ -33,14 +33,10 @@ class Game:
         while True:
             # Each agent performs Monte Carlo rooted at current state
             for agent in self.agents:
-                agent.monte_carlo(self.state)
-
-            # Get successor states of agent actions
-            
-
+                self.state = agent.monte_carlo(self.state)
 
             # Calculate combat if there's collision. This will also update the state result
-            self.state.combat(self.agents)
+            self.state.combat(self.state.armies)
 
             pass
             
