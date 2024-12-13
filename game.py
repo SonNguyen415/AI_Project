@@ -53,6 +53,10 @@ class Game:
             # Each agent performs Monte Carlo rooted at current state
             for agent in self.agents:
                 self.state = agent.monte_carlo(self.state)
+                if self.state == None:
+                    print("Game over")
+                    self.display_map_with_armies()
+                    return
 
             # Calculate combat if there's collision. This will also update the state result
             self.state.combat(self.state.armies)

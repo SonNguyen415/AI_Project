@@ -204,10 +204,7 @@ class Agent:
             actions = node.state.get_legal_actions(node.state.armies)
             action = actions[random.randint(0, len(actions)-1)]
             node.state = node.state.get_successor(action)
-            terminal = node.state.is_terminate()
-            self.display_map_with_armies(node.state)
             node.state.combat(node.state.armies)
-           
             terminal = node.state.is_terminate()
         
         return self.is_win(node.state)
@@ -269,14 +266,12 @@ class Agent:
         print("Monte carlo started")
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            print("Selection")
             node = root
             while len(node.successors) > 0:
                 node = self.select_node(root)
                 node.visited += 1
 
             # Expand the leaf node
-            print("Expansion")
             node.successors = self.expand(node)
             if len(node.successors) == 0:
                 if self.is_win(node.state):
@@ -286,11 +281,9 @@ class Agent:
             else:
                 # Select one of the leaf nodes and rollout
                 self.select_node(node)
-                print("Rollout")
                 win = self.rollout(node)
         
                 # Back-propagate
-                print("Backpropagation")
                 self.backpropagate(node, win)
 
         print("Finished monte carlo")
@@ -304,7 +297,7 @@ class Agent:
                 total_utils[successor.action] = successor.weighted_win_rate()
 
         if len(total_utils) == 0:
-            return root.state
+            return None
         
         # Best action is action with highest utility
         best_action = max(total_utils, key=total_utils.get)
