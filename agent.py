@@ -177,11 +177,11 @@ class Agent:
         return 
     
 
-    def take_action(self, successor_nodes: Node):
-        """
-        Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
-        """
-        pass
+    # def take_action(self, successor_nodes: Node):
+    #     """
+    #     Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
+    #     """
+    #     pass
 
     def select_node(self, node: Node):
         """
