@@ -147,8 +147,26 @@ class Agent:
         
         return succesor
 
+    def select_node(self, node: Node):
+        """
+        Given a node, select the next node from the list of successors
+        """
+        max_UCB1_node = node.successors[0]
+        max_UCB1 = self.UCB1(node.successors[0], node.visited)
+        for successor in node.successors:
+            if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1_node = successor
 
-
+        return max_UCB1_node
+    
+    def backpropagate(self, node: Node, val):
+        while node.parent != None:
+            node.visited +=1
+            node.won +=1
+            node = node.parent
+            
+        node.visited +=1
+        node.won +=1
 
 
 
@@ -183,16 +201,5 @@ class Agent:
     #     """
     #     pass
 
-    def select_node(self, node: Node):
-        """
-        Given a node, select the next node from the list of successors
-        """
-        max_UCB1_node = node.successors[0]
-        max_UCB1 = self.UCB1(node.successors[0], node.visited)
-        for successor in node.successors:
-            if self.UCB1(successor, node.visited) > max_UCB1:
-                max_UCB1_node = successor
-
-        return max_UCB1_node
     
     
