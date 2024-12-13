@@ -151,6 +151,18 @@ class Agent:
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
+
+    def is_win(self, node: Node):
+        our_count = 0
+        enemy_count = 0
+        for army in node.state.armies:
+            if army.agent.id == self.id:
+                our_count += army.troops
+            else:
+                enemy_count += army.troops
+                
+        return 1 if our_count > enemy_count else 0
+                
     
     def rollout(self, node: Node):
         terminal = False
@@ -161,7 +173,7 @@ class Agent:
             node.state.combat(node.state.armies)
             terminal = node.state.is_terminate()
         
-        return 0 if len(node.state.armies) == 0 else 1
+        return self.is_win(node)
     
     def UCB1(self, node: Node, parent_visited):
         return node.win_rate() + (2*math.sqrt((math.log(parent_visited)/node.visited)))
@@ -171,7 +183,6 @@ class Agent:
         for army in node.state.armies:
             if army.agent.id != self.id:
                 armies.append(army)
-
         return armies
     
     def expand(self, node: Node):
@@ -221,13 +232,19 @@ class Agent:
 
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            node = self.select_state(root)
+            while len(node.children) > 0:
+                node = self.select_node(root)
+                node.visited += 1
 
             # Expand the leaf node
-            node.successors = self.get_successors()
-
-
+            node.successors = self.expand(node)
+            if len(node.successors) == 0:
+                # No successors, we're at terminate. Need to check if we won or lost here
+                continue
+                
             # Select one of the leaf nodes 
+            if len(node.successors) > 1:
+                node = node.successors[random.randint(0, len(node.successors))]
 
 
             # Rollout
