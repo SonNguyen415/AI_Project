@@ -62,7 +62,44 @@ class State:
 
         return successor
 
-    
+    def combat_proposition(self, army_list: list, probability):
+        army_state_list = list()
+        army_list_stack = list()
+
+        army_list_stack.append((army_list, probability))
+
+        while (len(army_list_stack) > 0):
+            armies = army_list_stack.pop()
+
+            army_list0 = list()
+            army_list1 = list()
+
+            for army in armies[0]:
+                if army.agent.id == 0 :
+                    army_list0.append(army)
+                else:
+                    army_list1.append(army)
+
+            for army0 in army_list0:
+                for army1 in army_list1:
+                    if army0.position == army1.position:
+                        p0 = army0.troops/(army0.troops + army1.troops) * armies[1]
+                        p1 = army1.troops/(army0.troops + army1.troops) * armies[1]
+                        a0 = list(armies[0])
+                        a0.remove(army1)
+                        a1 = list(armies[0])
+                        a1.remove(army0)
+                        army_list_stack.append((a0, p0))
+                        army_list_stack.append((a1, p1))
+                        continue
+            
+            army_state_list.append(armies)
+
+        state_list = list()
+        for army_state in army_state_list:
+            state_list.append((State(self.agents, self.map, army_state[0]), army_state[1]))
+        return state_list
+
     def combat(self, army_list: list):
         army_list0 = list()
         army_list1 = list()
