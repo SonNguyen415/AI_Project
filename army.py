@@ -20,26 +20,24 @@ class Army:
 
         y, x = self.position
         
-        directions = {
-            (y, x - 1),
-            (y, x + 1),
-            (y - 1, x),
-            (y + 1, x),
-        }
+        directions = [(y, x - 1), 
+                      (y, x + 1),
+                      (y - 1, x),
+                      (y + 1, x),]
 
         legal_moves = list()
 
-        for direction, (nx, ny) in directions.items():
+        for (ny, nx) in directions:
             # In-Bounds Legality Check
             if (nx < 0 or nx >= game_map.width) or (ny < 0 or ny >= game_map.height):
                 continue
 
             # Get Map Location
-            new_position = game_map.map[nx][ny]
+            new_position = game_map.map[ny][nx]
 
             # Passability Check
             if new_position.location_type != locations.LocationType.IMPASSABLE:
-                legal_moves.append(direction)
+                legal_moves.append((ny, nx))
 
         return legal_moves
         
@@ -49,7 +47,6 @@ class Army:
         Returns the successor state of army based on action
         :Returns Army class
         """
-
         # Attrition
         new_troops = max(0, self.troops - 50*(game_map.get_path_cost(self.position, new_position)))
 

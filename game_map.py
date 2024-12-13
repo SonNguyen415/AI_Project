@@ -37,14 +37,15 @@ class GameMap:
         # Generate every other terrain types, this will be randomized 
         for row in self.map:
             for location in row:
-                if location.location_type != loc.LocationType.SUPPLY_CACHE:
-                    random_terrain = random.choices(exclude_road, weights=weights, k=1)[0]
-                    location.terrain = random_terrain
+                random_terrain = random.choices(exclude_road, weights=weights, k=1)[0]
+                location.terrain = random_terrain
 
-                    # Let's make 25% of mountains be impassable
-                    if random_terrain == loc.TerrainType.MOUNTAIN:
-                        if random.random() <= 0.25:
-                            location.location_type = loc.LocationType.IMPASSABLE
+                # Let's make 25% of mountains be impassable
+                if random_terrain == loc.TerrainType.MOUNTAIN:
+                    if random.random() <= 0.25:
+                        location.location_type = loc.LocationType.IMPASSABLE
+
+                location.set_path_cost()
 
 
     def get_path_cost(self, old_pos: int, new_pos: int):
@@ -72,21 +73,9 @@ class GameMap:
         """
         for row in self.map:
             for location in row:
-       
-                if location.location_type == loc.LocationType.SUPPLY_CACHE:
-                    print("C", end = " ")
-                # elif location.location_type == loc.LocationType.IMPASSABLE:
-                #     print("@", end= " ")
-                # elif location.terrain == loc.TerrainType.MOUNTAIN:
-                #     print("&", end=" ")
-                # elif location.terrain == loc.TerrainType.FORESTS:
-                #     print("!", end=" ")
-                # elif location.terrain == loc.TerrainType.HIGHLAND:
-                #     print("^", end=" ")
-                # elif location.terrain == loc.TerrainType.WATER:
-                #     print("~", end=" ")
-                else:
-                    print(".", end=" ")
+                print(".", end=" ")
                     
             print()
-            
+    
+
+  

@@ -31,3 +31,8 @@ class Location:
                 self.path_cost = 4
             case TerrainType.WATER:
                 self.path_cost = 5
+            case _:
+                self.path_cost = 1  
+
+    def serialized(self):
+        return f"Terrain: {self.terrain}, Location Type: {self.location_type}, Coordinates: {self.coordinates}, Path Cost: {self.path_cost}"
