@@ -7,7 +7,8 @@ import game_map
 import locations
 
 class Army:
-    def __init__(self, troops, position):
+    def __init__(self, agent, troops, position):
+        self.agent = agent
         self.troops = troops
         self.position = position
         
@@ -57,6 +58,6 @@ class Army:
         if new_troops == 0:
             return None
 
-        return Army(new_troops, new_position)
+        return Army(self.agent, new_troops, new_position)
     
 

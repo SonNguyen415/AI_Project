@@ -1,9 +1,11 @@
 """
 This file will contain the main logic for the game flow
 """
-import game_map, army, agent as ag
+import game_map, random, army, agent as ag
 
 ITERATIONS = 1000
+START_ARMY_SZ = 20000
+N_ARMIES = 1
 
 class Game:
     def __init__(self, width, height) -> None:
@@ -13,12 +15,15 @@ class Game:
 
         # Initialize agents 
         self.agents = list()
-        for i in range(2):
-            agent = ag.Agent(i, ITERATIONS)
-            self.agents.append(agent)
+        self.agents.append(ag.Agent(0, ITERATIONS))
+        self.agents.append(ag.Agent(1, ITERATIONS))
 
         # Initialize state
-        self.state = ag.State(self.agents, self.map)
+        armies = list()
+        armies.append(army.Army(self.agents[0], START_ARMY_SZ, (0,0)))
+        armies.append(army.Army(self.agents[1]), START_ARMY_SZ, (height, width))
+        self.state = ag.State(self.agents, self.map, armies)
+       
 
 
     def play(self):

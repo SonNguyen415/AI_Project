@@ -2,39 +2,41 @@
 This file contains code for the agents themselves and their decisions
 """
 import army, game_map, itertools, random
-
-
-START_ARMY_SZ = 20000
-N_ARMIES = 1
     
 
 class State: 
-    def __init__(self, agents: list, game_map: game_map.GameMap):
+    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list):
         # Current armies
-        self.armies = dict()
+        self.armies = armies
         self.map = game_map
-        for agent in agents:
-            self.armies[agent.id] = [START_ARMY_SZ] * N_ARMIES
+        self.agents = agents
+        
 
-    def get_legal_actions(self):
+    def get_legal_actions(self, army_list: list):
         """
         Returns possible agent actions, which comes in the forms of permutations of army actions
         :param state: The current state of all armies
         :return: A list of list of (army, position) tuples where position is the new position an army can take
         """
 
-        # Retrieves the list of armies
-        army_list = self.armies
-
         # Initialize the army legal moves list
-        army_legal_moves = list()
+        agent_legal_moves = list()
 
-        # Loop through the army list to append all army legal moves
+        # Loops through armies in the army list
         for army in army_list:
-            army_legal_moves.append((army, army.get_army_legal_moves(self.map)))
+            # List of (army, move) tuple that maps move to an army
+            army_legal_moves = list()
+            # Get the legal moves of an army
+            army_move_list = army.get_army_legal_moves(self.map)
+            # Loop through the army move list
+            for army_move in army_move_list:
+                # Append each move, the army, and the agent to the legal moves for that army
+                army_legal_moves.append((army, army_move))
+            # Append the list of legal moves for the army to the overall list
+            agent_legal_moves.append(army_legal_moves)
 
-        # Create list of tuple permutations
-        legal_moves = list(itertools.product(*army_legal_moves))
+        # Find every permutation of moves the armies can make
+        legal_moves = list(itertools.product(*agent_legal_moves))
 
         # Return legal moves as list
         return list(map(list, legal_moves))
@@ -48,15 +50,17 @@ class State:
         """
 
         # Initialize list for new army classes
-        armies = []
+        armies = list()
 
         # Loop through the new positions list
-        for army in army_position_pairs:
+        for pair in army_position_pairs:
             # Append the successor of the army given the new position
-            armies.append(army[0].generate_army_successor(self.map, army[1]))
+            armies.append(pair[0].generate_army_successor(self.map, pair[1]))
 
         # Return list of successor armies
-        return armies
+        successor = State(self.agents, self.map, armies)
+
+        return successor
 
     
     def combat(self, agents: list):
