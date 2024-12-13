@@ -5,7 +5,7 @@ import army, game_map, itertools, random, math
     
 
 class State: 
-    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list[]):
+    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list):
         # Current armies
         self.armies = armies
         self.map = game_map
@@ -187,7 +187,12 @@ class Agent:
         """
         Given a node, select the next node from the list of successors
         """
-        # I'm just going with first successor for now
-        return node.successors[0]
+        max_UCB1_node = node.successors[0]
+        max_UCB1 = self.UCB1(node.successors[0], node.visited)
+        for successor in node.successors:
+            if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1_node = successor
+
+        return max_UCB1_node
     
     
