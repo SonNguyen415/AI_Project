@@ -217,11 +217,11 @@ class Agent:
 
     def monte_carlo(self, state: State):       
         # Root is the current state
-        root = Node(state)
+        root = Node(state, action=None, p_occur=1.0)
 
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            node = self.select_state(root)
+            node = self.select_node(root)
 
             # Expand the leaf node
             node.successors = self.get_successors()
