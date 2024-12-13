@@ -256,7 +256,16 @@ class Agent:
                 self.backpropagate(node, win)
 
 
-        final_selection = self.select_node(root)
-        result = final_selection.get_successor(final_selection.action)
+        # Generate a dictionary wherein key=action and value=total utility of said action
+        total_utils = dict()
+        for successor in root.successors:
+            if successor.action in total_utils:
+                total_utils[successor.action] += successor.weighted_win_rate()
+            else:
+                total_utils[successor.action] = successor.weighted_win_rate()
+
+        # Best action is action with highest utility
+        best_action = max(total_utils, key=total_utils.get)
+        result = root.get_successor(best_action)
         return result
 
