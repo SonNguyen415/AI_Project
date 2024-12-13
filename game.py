@@ -36,6 +36,7 @@ class Game:
                 agent.monte_carlo(self.state)
 
             # Get successor states of agent actions
+            
 
 
             # Calculate combat if there's collision. This will also update the state result

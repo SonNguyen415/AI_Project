@@ -198,9 +198,6 @@ class Agent:
                 for combat_successor in combat_successors:
                     successors.append(Node(combat_successor[0], action, combat_successor[1]))
 
-        for success in successors:
-            node.successors.append(success)
-        
         return successors
 
     def select_node(self, node: Node):
@@ -239,14 +236,18 @@ class Agent:
             # Expand the leaf node
             node.successors = self.expand(node)
             if len(node.successors) == 0:
-                # No successors, we're at terminate. Need to check if we won or lost here
-                continue
-                
-            # Select one of the leaf nodes and rollout
-            self.select_node(node)
-            win = self.rollout(node)
-    
-            # Back-propagate
-            self.backpropagate(node, win)
+                if self.is_win(node):
+                    self.backpropagate(node, 1)
+                else:
+                    self.backpropagate(node, 0)
+            else:
+                # Select one of the leaf nodes and rollout
+                self.select_node(node)
+                win = self.rollout(node)
+        
+                # Back-propagate
+                self.backpropagate(node, win)
 
-        return self.select_node(root)
+
+        final_selection = self.select_node(root)
+
