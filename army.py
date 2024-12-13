@@ -48,7 +48,7 @@ class Army:
         :Returns Army class
         """
         # Attrition
-        new_troops = max(0, self.troops - 50*(game_map.get_path_cost(self.position, new_position)))
+        new_troops = max(0, self.troops - 10*(game_map.get_path_cost(self.position, new_position)))
 
         if new_troops == 0:
             return None

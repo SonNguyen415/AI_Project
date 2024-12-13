@@ -10,7 +10,8 @@ class State:
         self.armies = armies
         self.map = game_map
         self.agents = agents
-        
+        self.true_state = False
+
 
     def get_legal_actions(self, army_list: list):
         """
@@ -52,6 +53,11 @@ class State:
         # Initialize list for new army classes
         armies = list()
 
+        
+        # if self.true_state:
+        #     print("Get successor")
+        #     print(f"Army {self.armies[0].agent.id} at {self.armies[0].position} with {self.armies[0].troops} troops")
+
         # Loop through the new positions list
         for pair in army_position_pairs:
             #Create army successor
@@ -62,6 +68,9 @@ class State:
 
         # Return list of successor armies
         successor = State(self.agents, self.map, armies)
+
+        # if self.true_state:
+        #     print(f"Army {successor.armies[0].agent.id} at {successor.armies[0].position} with {successor.armies[0].troops} troops")
 
         return successor
 
@@ -106,6 +115,7 @@ class State:
     def combat(self, army_list: list):
         army_list0 = list()
         army_list1 = list()
+        deleted_list = list()
 
         for army in army_list:
             if army.agent.id == 0 :
@@ -115,20 +125,31 @@ class State:
 
         if len(army_list0) == 0 or len(army_list1) == 0:
             return
+        
 
         for army0 in army_list0:
             for army1 in army_list1:
+                if army0 in deleted_list or army1 in deleted_list:
+                    continue
+
                 if army0.position == army1.position:
-                    print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
-                    print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
-                    raise Exception("Combat!")
+                    
+                    if self.true_state:
+                        print("Combat!")
+                        print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
+                        print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
+
                     probability0 = army0.troops/(army0.troops + army1.troops)
                     probability1 = army1.troops/(army0.troops + army1.troops)
                     choice = random.choices([0, 1], [probability0, probability1])
                     if choice == 0:
-                        army_list.remove(army1)
+                        deleted_list.append(army1)
                     else:
-                        army_list.remove(army0)
+                        deleted_list.append(army0)
+        
+        for army in deleted_list:
+            army_list.remove(army)
+                        
         
     def is_terminate(self):
         for agent in self.agents:
@@ -152,6 +173,7 @@ class Node:
         else:
             self.visited = 0
             self.won = 0
+        
         self.action = action
         self.p_occur = p_occur
         self.parent = None
@@ -159,7 +181,7 @@ class Node:
 
     def win_rate(self):
         if self.visited == 0:
-            return 0
+            return 0.0
         return self.won / self.visited
 
     def weighted_win_rate(self):
@@ -171,7 +193,7 @@ class Agent:
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
-        self.c = math.sqrt(2)
+        self.c = math.sqrt(4)
 
     def is_win(self, state: State):
         our_count = 0
@@ -181,9 +203,8 @@ class Agent:
                 our_count += army.troops
             else:
                 enemy_count += army.troops
-                
-        return our_count > enemy_count 
-                
+        return our_count > enemy_count
+              
     def display_map_with_armies(self, state: State):    
         """
         This function will print the game map as a grid of characters with armies
@@ -214,7 +235,7 @@ class Agent:
             node.state.combat(node.state.armies)
             terminal = node.state.is_terminate()
         
-        return self.is_win(node.state)
+        return 1 if self.is_win(node.state) else 0
     
     def UCB1(self, node: Node, parent_visited: int):
         if node.visited == 0:
@@ -244,6 +265,9 @@ class Agent:
             else:
                 for combat_successor in combat_successors:
                     successors.append(Node(combat_successor[0], agent_action, combat_successor[1]))
+        
+        for successor in successors:
+            successor.parent = node
 
         return successors
 
@@ -265,17 +289,9 @@ class Agent:
             node.visited += 1
             node.won += val
             node = node.parent
-            
+
         node.visited += 1
         node.won += val
-
-    def print_tree(self, root:Node, level=0):
-   
-        # Print the current node with indentation based on the level
-        print(" " * (2 * level) + str(root))
-        # Recursively print each child at the next level
-        for child in root.successors:
-            self.print_tree(child, level + 1)
 
 
     def monte_carlo(self, state: State):       
@@ -294,6 +310,7 @@ class Agent:
             if len(node.successors) == 0:
                 if self.is_win(node.state):
                     self.backpropagate(node, 1)
+                    
                 else:
                     self.backpropagate(node, 0)
             else:

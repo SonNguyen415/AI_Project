@@ -17,6 +17,7 @@ class Location:
         self.terrain = terrain
         self.location_type = location_type
         self.coordinates = coordinates
+        self.controller = 0
         self.path_cost = self.set_path_cost()
 
     def set_path_cost(self):
