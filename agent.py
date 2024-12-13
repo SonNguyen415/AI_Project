@@ -119,6 +119,9 @@ class State:
         for army0 in army_list0:
             for army1 in army_list1:
                 if army0.position == army1.position:
+                    print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
+                    print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
+                    raise Exception("Combat!")
                     probability0 = army0.troops/(army0.troops + army1.troops)
                     probability1 = army1.troops/(army0.troops + army1.troops)
                     choice = random.choices([0, 1], [probability0, probability1])
@@ -143,8 +146,12 @@ class Node:
     def __init__(self, state: State, action, p_occur):
         # A monte carlo node 
         self.state = state
-        self.visited = 0
-        self.won = 0
+        if action == None:
+            self.visited = 1
+            self.won = 0
+        else:
+            self.visited = 0
+            self.won = 0
         self.action = action
         self.p_occur = p_occur
         self.parent = None
@@ -258,17 +265,24 @@ class Agent:
         node.visited += 1
         node.won += val
 
+    def print_tree(self, root:Node, level=0):
+   
+        # Print the current node with indentation based on the level
+        print(" " * (2 * level) + str(root))
+        # Recursively print each child at the next level
+        for child in root.successors:
+            self.print_tree(child, level + 1)
 
 
     def monte_carlo(self, state: State):       
         # Root is the current state
         root = Node(state, None, 1)
-        print("Monte carlo started")
+
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
             node = root
             while len(node.successors) > 0:
-                node = self.select_node(root)
+                node = self.select_node(node)
                 node.visited += 1
 
             # Expand the leaf node
@@ -280,27 +294,26 @@ class Agent:
                     self.backpropagate(node, 0)
             else:
                 # Select one of the leaf nodes and rollout
-                self.select_node(node)
+                node = self.select_node(node)
                 win = self.rollout(node)
         
                 # Back-propagate
                 self.backpropagate(node, win)
-
-        print("Finished monte carlo")
-
+                
         # Generate a dictionary wherein key=action and value=total utility of said action
         total_utils = dict()
         for successor in root.successors:
-            if successor.action in total_utils:
-                total_utils[successor.action] += successor.weighted_win_rate()
+            action = tuple(successor.action)
+            if action in total_utils:
+                total_utils[action] += successor.weighted_win_rate()
             else:
-                total_utils[successor.action] = successor.weighted_win_rate()
+                total_utils[action] = successor.weighted_win_rate()
 
         if len(total_utils) == 0:
             return None
         
         # Best action is action with highest utility
         best_action = max(total_utils, key=total_utils.get)
-        result = root.get_successor(best_action)
+        result = state.get_successor(best_action)
         return result
 

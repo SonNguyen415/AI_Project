@@ -35,7 +35,7 @@ class Game:
                 is_army = False
                 for army in armies:
                     if location.coordinates == army.position:
-                        print("A", end=" ")
+                        print("A", end=" ") if army.agent.id == 0 else print("B", end=" ")
                         is_army = True
                         break
                 if not is_army:
@@ -49,6 +49,8 @@ class Game:
 
         while not self.state.is_terminate():
             self.display_map_with_armies()
+            for army in self.state.armies:
+                print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
             print("\n-------------------------------------------------------------------------\n")
             # Each agent performs Monte Carlo rooted at current state
             for agent in self.agents:
@@ -58,12 +60,14 @@ class Game:
                     self.display_map_with_armies()
                     return
 
+
             # Calculate combat if there's collision. This will also update the state result
             self.state.combat(self.state.armies)
 
+
             # Check if the game is over
             for i, agent in enumerate(self.state.agents):
-                if agent.is_win(self.state):
+                if agent.is_win(self.state) and self.state.is_terminate():
                     print(f"Agent {i} wins!")
                     return
 
