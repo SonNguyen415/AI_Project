@@ -63,18 +63,26 @@ class State:
         return successor
 
     
-    def combat(self, agents: list):
-        for army0 in self.armies[0]:
-            for army1 in self.armies[1]:
+    def combat(self, army_list: list):
+        army_list0 = list()
+        army_list1 = list()
+
+        for army in army_list:
+            if army.agent.id == 0 :
+                army_list0.append(army)
+            else:
+                army_list1.append(army)
+
+        for army0 in army_list0:
+            for army1 in army_list1:
                 if army0.position == army1.position:
                     probability0 = army0.troops/(army0.troops + army1.troops)
                     probability1 = army1.troops/(army0.troops + army1.troops)
                     choice = random.choices([0, 1], [probability0, probability1])
                     if choice == 0:
-                        self.armies[agents[1]].remove(army1)
+                        army_list.remove(army1)
                     else:
-                        self.armies[agents[0]].remove(army0)
-
+                        army_list.remove(army0)
         
     def is_terminate(self):
         for agent_armies in self.armies:
