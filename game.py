@@ -82,7 +82,7 @@ class Game:
 
                     print(f"Game over! Agent {i} died from attrition!")
                     self.display_map_with_armies()
-                    return
+                    return 
                 new_armies.extend(agent_armies)
 
             self.state = ag.State(self.agents, self.map, new_armies)
@@ -95,8 +95,8 @@ class Game:
             for i, agent in enumerate(self.state.agents):
                 if self.state.is_terminate() and agent.is_win(self.state):
                     print(f"Agent {i} wins!")
-                    self.state.evaluate(i)
-
+                    
+                    print("Remaining Agent Troops: ", self.state.evaluate(i))
                     return
 
 
