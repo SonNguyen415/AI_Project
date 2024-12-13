@@ -5,7 +5,7 @@ import army, game_map, itertools, random, math
     
 
 class State: 
-    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list):
+    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list[]):
         # Current armies
         self.armies = armies
         self.map = game_map
@@ -89,6 +89,8 @@ class State:
             if len(agent_armies) == 0:
                 return True
         return False
+    
+
 
 class Node:
     def __init__(self, state: State):
@@ -124,6 +126,29 @@ class Agent:
     
     def UCB1(self, node: Node, parent_visited):
         return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+    
+    def get_enemy_armies(self, node: Node):
+        armies = []
+        for army in node.state.armies:
+            if army.agent.id != self.id:
+                armies.append(army)
+
+        return armies
+    
+    def expand(self, node: Node):
+        actions = node.state.get_legal_actions(node.state.armies)
+        succesor = []
+        for action in actions:
+            node.state.get_successor(action)
+            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies())) # needs to be enermy armies
+
+            # skipping get_combat_successor for now
+            succesor.append(Node(node.state.get_successor(action), 0, 0, node, []))
+        
+        return succesor
+
+
+
 
 
 
@@ -133,9 +158,7 @@ class Agent:
 
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            node = root
-            while len(node.successors) > 0:
-                node = self.select_state(node)
+            node = self.select_state(root)
 
             # Expand the leaf node
             node.successors = self.get_successors()
