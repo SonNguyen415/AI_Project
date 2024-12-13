@@ -143,7 +143,10 @@ class Node:
     def win_rate(self):
         if self.visited == 0:
             return 0
-        return self.won / self.visited * self.p_occur
+        return self.won / self.visited
+
+    def weighted_win_rate(self):
+        return self.win_rate() * self.p_occur
    
 
 class Agent:
@@ -179,7 +182,7 @@ class Agent:
     def UCB1(self, node: Node, parent_visited: int):
         if node.visited == 0:
             return float('inf')
-        return node.win_rate() + self.c*(math.sqrt((math.log(parent_visited)/node.visited)))
+        return node.weighted_win_rate() + self.c*(math.sqrt((math.log(parent_visited)/node.visited)))
     
     def get_enemy_armies(self, node: Node):
         armies = []
