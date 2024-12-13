@@ -1,7 +1,7 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, game_map, itertools, random
+import army, game_map, itertools, random, math
     
 
 class State: 
@@ -121,6 +121,10 @@ class Agent:
             terminal = node.state.is_terminate()
         
         return 0 if len(node.state.armies) == 0 else 1
+    
+    def UCB1(self, node: Node, parent_visited):
+        return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+
 
 
     def monte_carlo(self, state: State):       
@@ -152,7 +156,7 @@ class Agent:
 
     def take_action(self, successor_nodes: Node):
         """
-        Given a list of successor nodes, choose successor based on win rate, return the corresponding action
+        Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
         """
         pass
 
