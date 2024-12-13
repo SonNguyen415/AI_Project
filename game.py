@@ -35,8 +35,6 @@ class Game:
         """
         the_map = self.map.map
         armies = self.state.armies
-        for army in armies:
-            print(army.position)
         for row in the_map:
             for location in row:
                 is_army = False
