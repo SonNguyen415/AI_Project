@@ -151,6 +151,7 @@ class Agent:
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
+        self.c = math.sqrt(2)
 
     def is_win(self, node: Node):
         our_count = 0
@@ -176,7 +177,9 @@ class Agent:
         return self.is_win(node)
     
     def UCB1(self, node: Node, parent_visited: int):
-        return node.win_rate() + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+        if node.visited == 0:
+            return float('inf')
+        return node.win_rate() + self.c*(math.sqrt((math.log(parent_visited)/node.visited)))
     
     def get_enemy_armies(self, node: Node):
         armies = []
@@ -208,6 +211,7 @@ class Agent:
         max_UCB1 = self.UCB1(node.successors[0], node.visited)
         for successor in node.successors:
             if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1 = self.UCB1(successor, node.visited)
                 max_UCB1_node = successor
 
         return max_UCB1_node
