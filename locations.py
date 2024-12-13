@@ -6,58 +6,38 @@ MIN_SUPPLY = 10 # Minimum before sending
 GENERATOR_SPEED = 10
 
 class TerrainType(Enum):
-    ROAD = 1
+    WATER = 1
     FLATLAND = 2
     HIGHLAND = 3
     FORESTS = 4
     MOUNTAIN = 5
-    WATER = 6
 
 class LocationType(Enum):
     PASSABLE = 1
     IMPASSABLE = 2
-    SUPPLY_HUB = 3
-    SUPPLY_GENERATOR = 4
-    
+    SUPPLY_CACHE = 3
 
 class Location:
     def __init__(self, terrain, location_type, coordinates):
         self.terrain = terrain
         self.location_type = location_type
         self.coordinates = coordinates
-        self.army = 0
-        self.supply = None
-        self.path_cost = 2
-        self.supply_path = False
-        self.controller = 0
+        self.supply = 100 
+        self.path_cost = self.set_path_cost()
 
-    def calculate_path_cost(self):
-        match self.terrain:
-            case TerrainType.ROAD:
-                return 1
-            case TerrainType.FLATLAND:
-                return 2
-            case TerrainType.HIGHLAND:
-                return 3
-            case TerrainType.FORESTS:
-                return 4
-            case TerrainType.MOUNTAIN:
-                return 4
-            case TerrainType.WATER:
-                return 5
-
-class SupplyHub:
-    def __init__(self, location):
-        self.location = location
+    def delete_cache(self):
         self.supply = 0
-        self.generator = False
+        self.location_type = LocationType.PASSABLE
 
-    def resupply(self):
-        self.location.army += self.supply
-
-    def consume(self):
-        self.location.army -= self.supply
-
-    def generate_supply(self):
-        if self.generator:
-            self.supply += GENERATOR_SPEED
+    def set_path_cost(self):
+        match self.terrain:
+            case TerrainType.FLATLAND:
+                self.path_cost = 1
+            case TerrainType.HIGHLAND:
+                self.path_cost = 2
+            case TerrainType.FORESTS:
+                self.path_cost = 3
+            case TerrainType.MOUNTAIN:
+                self.path_cost = 4
+            case TerrainType.WATER:
+                self.path_cost = 5

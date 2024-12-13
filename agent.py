@@ -1,13 +1,242 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import supply as sp
-import army
+import army, game_map, itertools, random, math
+    
 
-START_ARMY_SZ = 20000
+class State: 
+    def __init__(self, agents: list, game_map: game_map.GameMap, armies: list):
+        # Current armies
+        self.armies = armies
+        self.map = game_map
+        self.agents = agents
+        
+
+    def get_legal_actions(self, army_list: list):
+        """
+        Returns possible agent actions, which comes in the forms of permutations of army actions
+        :param state: The current state of all armies
+        :return: A list of list of (army, position) tuples where position is the new position an army can take
+        """
+
+        # Initialize the army legal moves list
+        agent_legal_moves = list()
+
+        # Loops through armies in the army list
+        for army in army_list:
+            # List of (army, move) tuple that maps move to an army
+            army_legal_moves = list()
+            # Get the legal moves of an army
+            army_move_list = army.get_army_legal_moves(self.map)
+            # Loop through the army move list
+            for army_move in army_move_list:
+                # Append each move, the army, and the agent to the legal moves for that army
+                army_legal_moves.append((army, army_move))
+            # Append the list of legal moves for the army to the overall list
+            agent_legal_moves.append(army_legal_moves)
+
+        # Find every permutation of moves the armies can make
+        legal_moves = list(itertools.product(*agent_legal_moves))
+
+        # Return legal moves as list
+        return list(map(list, legal_moves))
+    
+
+    def get_successor(self, army_position_pairs: list):
+        """
+        Given a list of (army, position) tuples, return successor state
+        :param list: The list of (army, position) tuples
+        :return: The successor state corresponding to the action
+        """
+
+        # Initialize list for new army classes
+        armies = list()
+
+        # Loop through the new positions list
+        for pair in army_position_pairs:
+            # Append the successor of the army given the new position
+            armies.append(pair[0].generate_army_successor(self.map, pair[1]))
+
+        # Return list of successor armies
+        successor = State(self.agents, self.map, armies)
+
+        return successor
+
+    def combat_proposition(self, army_list: list, probability):
+        army_state_list = list()
+        army_list_stack = list()
+
+        army_list_stack.append((army_list, probability))
+
+        while (len(army_list_stack) > 0):
+            armies = army_list_stack.pop()
+
+            army_list0 = list()
+            army_list1 = list()
+
+            for army in armies[0]:
+                if army.agent.id == 0 :
+                    army_list0.append(army)
+                else:
+                    army_list1.append(army)
+
+            for army0 in army_list0:
+                for army1 in army_list1:
+                    if army0.position == army1.position:
+                        p0 = army0.troops/(army0.troops + army1.troops) * armies[1]
+                        p1 = army1.troops/(army0.troops + army1.troops) * armies[1]
+                        a0 = list(armies[0])
+                        a0.remove(army1)
+                        a1 = list(armies[0])
+                        a1.remove(army0)
+                        army_list_stack.append((a0, p0))
+                        army_list_stack.append((a1, p1))
+                        continue
+            
+            army_state_list.append(armies)
+
+        state_list = list()
+        for army_state in army_state_list:
+            state_list.append((State(self.agents, self.map, army_state[0]), army_state[1]))
+        return state_list
+
+    def combat(self, army_list: list):
+        army_list0 = list()
+        army_list1 = list()
+
+        for army in army_list:
+            if army.agent.id == 0 :
+                army_list0.append(army)
+            else:
+                army_list1.append(army)
+
+        for army0 in army_list0:
+            for army1 in army_list1:
+                if army0.position == army1.position:
+                    probability0 = army0.troops/(army0.troops + army1.troops)
+                    probability1 = army1.troops/(army0.troops + army1.troops)
+                    choice = random.choices([0, 1], [probability0, probability1])
+                    if choice == 0:
+                        army_list.remove(army1)
+                    else:
+                        army_list.remove(army0)
+        
+    def is_terminate(self):
+        for agent_armies in self.armies:
+            if len(agent_armies) == 0:
+                return True
+        return False
+    
+
+
+class Node:
+    def __init__(self, state: State):
+        # A monte carlo node 
+        self.state = state
+        self.visited = 0
+        self.won = 0
+        self.parent = None
+        self.successors = list()
+
+    def win_rate(self):
+        if self.visited == 0:
+            return 0
+        return self.won / self.visited
+   
 
 class Agent:
-    def __init__(self, id):
+    def __init__(self, id, iterations):        
+        # Number of iterations for MCTS
+        self.iterations = iterations 
         self.id = id
-        self.supply_line = sp.SupplyGraph
-        self.armies = [army.Army(START_ARMY_SZ)]
+    
+    def rollout(self, node: Node):
+        terminal = False
+        while not terminal:
+            actions = node.state.get_legal_actions(node.state.armies)
+            action = actions[random.randint(0, len(actions))]
+            node.state.get_successor(action)
+            node.state.combat(node.state.armies)
+            terminal = node.state.is_terminate()
+        
+        return 0 if len(node.state.armies) == 0 else 1
+    
+    def UCB1(self, node: Node, parent_visited):
+        return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+    
+    def get_enemy_armies(self, node: Node):
+        armies = []
+        for army in node.state.armies:
+            if army.agent.id != self.id:
+                armies.append(army)
+
+        return armies
+    
+    def expand(self, node: Node):
+        actions = node.state.get_legal_actions(node.state.armies)
+        succesor = []
+        for action in actions:
+            node.state.get_successor(action)
+            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies())) # needs to be enermy armies
+
+            # skipping get_combat_successor for now
+            succesor.append(Node(node.state.get_successor(action), 0, 0, node, []))
+        
+        return succesor
+
+    def select_node(self, node: Node):
+        """
+        Given a node, select the next node from the list of successors
+        """
+        max_UCB1_node = node.successors[0]
+        max_UCB1 = self.UCB1(node.successors[0], node.visited)
+        for successor in node.successors:
+            if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1_node = successor
+
+        return max_UCB1_node
+    
+    def backpropagate(self, node: Node, val):
+        while node.parent != None:
+            node.visited +=1
+            node.won +=1
+            node = node.parent
+            
+        node.visited +=1
+        node.won +=1
+
+
+
+    def monte_carlo(self, state: State):       
+        # Root is the current state
+        root = Node(state)
+
+        for _ in range(self.iterations):
+            # Select state until we reach a leaf node
+            node = self.select_state(root)
+
+            # Expand the leaf node
+            node.successors = self.get_successors()
+
+
+            # Select one of the leaf nodes 
+
+
+            # Rollout
+            
+
+            # Back-propagate
+            pass
+
+        self.take_action(root.successors)
+        return 
+    
+
+    # def take_action(self, successor_nodes: Node):
+    #     """
+    #     Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
+    #     """
+    #     pass
+
+    
+    
