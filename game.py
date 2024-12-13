@@ -21,7 +21,7 @@ class Game:
         # Initialize state
         armies = list()
         armies.append(army.Army(self.agents[0], START_ARMY_SZ, (0,0)))
-        armies.append(army.Army(self.agents[1]), START_ARMY_SZ, (height, width))
+        armies.append(army.Army(self.agents[1], START_ARMY_SZ, (height-1, width-1)))
         self.state = ag.State(self.agents, self.map, armies)
        
 

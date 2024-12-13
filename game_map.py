@@ -12,6 +12,7 @@ class GameMap:
         self.height = height
         self.map = [[loc.Location(loc.TerrainType.FLATLAND, loc.LocationType.PASSABLE, (y, x)) for x in range(width)] for y in range(height)]
         self.generate_map_info(10)
+        self.supply = []
 
         
     def generate_map_info(self, n_supply: int):
@@ -28,6 +29,7 @@ class GameMap:
     # Supplies scattered around the map. By default, there will be width+1 supplies scattered randomly
     def generate_supply(self, n_supply: int):
         # Generate supply caches (needs to be redone)
+        self.supply = []
         chosen_positions = set()
         while len(chosen_positions) < n_supply:
             # step 1: pick random coordinate
@@ -39,7 +41,7 @@ class GameMap:
             if location.location_type != loc.LocationType.PASSABLE or location in chosen_positions:
                 continue
 
-            #step 3: mark location as supply cach
+            #step 3: mark location as supply cache
             location.location_type = loc.LocationType.SUPPLY_CACHE
             chosen_positions.add((rand_y, rand_x))
             

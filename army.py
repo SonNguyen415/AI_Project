@@ -26,7 +26,7 @@ class Army:
             (y, x - 1),
             (y, x + 1),
             (y - 1, x),
-            (y + 1, x),
+            (y + 1, x),a
         }
 
         legal_moves = list()
