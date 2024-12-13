@@ -54,8 +54,11 @@ class State:
 
         # Loop through the new positions list
         for pair in army_position_pairs:
-            # Append the successor of the army given the new position
-            armies.append(pair[0].generate_army_successor(self.map, pair[1]))
+            #Create army successor
+            army_successor = pair[0].generate_army_successor(self.map, pair[1])
+            # Append the successor of the army given the new position if it exists
+            if army_successor != None:
+                armies.append(army_successor)
 
         # Return list of successor armies
         successor = State(self.agents, self.map, armies)
@@ -109,6 +112,9 @@ class State:
                 army_list0.append(army)
             else:
                 army_list1.append(army)
+
+        if len(army_list0) == 0 or len(army_list1) == 0:
+            return
 
         for army0 in army_list0:
             for army1 in army_list1:
