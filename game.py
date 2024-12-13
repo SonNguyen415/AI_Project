@@ -78,11 +78,17 @@ class Game:
             for i, agent in enumerate(self.agents):
                 agent_armies = agent.monte_carlo(self.state)
                 if agent_armies == None:
-                    self.state.evaluate({i})
-
                     print(f"Game over! Agent {i} died from attrition!")
                     self.display_map_with_armies()
-                    return 
+                    if(i == 0):
+                        print(f"Agent 1 wins!")
+                        print("Remaining Agent Troops: ", self.state.evaluate(1))
+                        return tuple([1,self.state.evaluate(1)])
+                    else: 
+                        print(f"Agent 0 wins!")
+                        print("Remaining Agent Troops: ", self.state.evaluate(0))
+                        return tuple([0,self.state.evaluate(0)])
+
                 new_armies.extend(agent_armies)
 
             self.state = ag.State(self.agents, self.map, new_armies)
@@ -95,9 +101,8 @@ class Game:
             for i, agent in enumerate(self.state.agents):
                 if self.state.is_terminate() and agent.is_win(self.state):
                     print(f"Agent {i} wins!")
-                    
                     print("Remaining Agent Troops: ", self.state.evaluate(i))
-                    return
+                    return tuple([i,self.state.evaluate(i)])
 
 
         print("Game over")

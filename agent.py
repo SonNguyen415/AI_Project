@@ -167,8 +167,7 @@ class State:
         for army in self.armies:
             if army.agent.id == agent_id:
                 count += army.troops
-
-    return count
+        return count
 
 class Node:
     def __init__(self, state: State, action, p_occur):
