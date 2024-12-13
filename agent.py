@@ -158,7 +158,13 @@ class State:
                 return True
         return False
                     
-
+    #return sum of remaining army sum. 
+    def evaluate(self, agent_id):        
+        count = 0
+        for army in self.armies:
+            if army.agent.id == agent_id:
+                count += army.troops
+        return count
 
 class Node:
     def __init__(self, state: State, action, p_occur):
