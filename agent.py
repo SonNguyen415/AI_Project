@@ -110,6 +110,18 @@ class Agent:
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
+    
+    def rollout(self, node: Node):
+        terminal = False
+        while not terminal:
+            actions = node.state.get_legal_actions(node.state.armies)
+            action = actions[random.randint(0, len(actions))]
+            node.state.get_successor(action)
+            node.state.combat(node.state.armies)
+            terminal = node.state.is_terminate()
+        
+        return 0 if len(node.state.armies) == 0 else 1
+
 
     def monte_carlo(self, state: State):       
         # Root is the current state
