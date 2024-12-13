@@ -30,7 +30,7 @@ class Game:
         print("Game started")
         self.map.display_map_coordinates()
         
-        while True:
+        while not self.state.is_terminate():
             # Each agent performs Monte Carlo rooted at current state
             for agent in self.agents:
                 self.state = agent.monte_carlo(self.state)
@@ -38,7 +38,12 @@ class Game:
             # Calculate combat if there's collision. This will also update the state result
             self.state.combat(self.state.armies)
 
-            pass
-            
+            # Check if the game is over
+            for agent, i in enumerate(self.state.agents):
+                if agent.is_win():
+                    print(f"Agent {i} wins!")
+                    return
+
+        print("Game over")
         
     
