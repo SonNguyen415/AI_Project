@@ -1,7 +1,7 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, game_map, itertools, random, math
+import game_map, itertools, random, math
     
 
 class State: 
@@ -10,7 +10,8 @@ class State:
         self.armies = armies
         self.map = game_map
         self.agents = agents
-        
+        self.true_state = False
+
 
     def get_legal_actions(self, army_list: list):
         """
@@ -52,13 +53,24 @@ class State:
         # Initialize list for new army classes
         armies = list()
 
+        
+        # if self.true_state:
+        #     print("Get successor")
+        #     print(f"Army {self.armies[0].agent.id} at {self.armies[0].position} with {self.armies[0].troops} troops")
+
         # Loop through the new positions list
         for pair in army_position_pairs:
-            # Append the successor of the army given the new position
-            armies.append(pair[0].generate_army_successor(self.map, pair[1]))
+            #Create army successor
+            army_successor = pair[0].generate_army_successor(self.map, pair[1])
+            # Append the successor of the army given the new position if it exists
+            if army_successor != None:
+                armies.append(army_successor)
 
         # Return list of successor armies
         successor = State(self.agents, self.map, armies)
+
+        # if self.true_state:
+        #     print(f"Army {successor.armies[0].agent.id} at {successor.armies[0].position} with {successor.armies[0].troops} troops")
 
         return successor
 
@@ -103,6 +115,7 @@ class State:
     def combat(self, army_list: list):
         army_list0 = list()
         army_list1 = list()
+        deleted_list = list()
 
         for army in army_list:
             if army.agent.id == 0 :
@@ -110,31 +123,57 @@ class State:
             else:
                 army_list1.append(army)
 
+        if len(army_list0) == 0 or len(army_list1) == 0:
+            return
+        
+
         for army0 in army_list0:
             for army1 in army_list1:
+                if army0 in deleted_list or army1 in deleted_list:
+                    continue
+
                 if army0.position == army1.position:
+                    
+                    if self.true_state:
+                        print("Combat!")
+                        print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
+                        print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
+
                     probability0 = army0.troops/(army0.troops + army1.troops)
                     probability1 = army1.troops/(army0.troops + army1.troops)
                     choice = random.choices([0, 1], [probability0, probability1])
                     if choice == 0:
-                        army_list.remove(army1)
+                        deleted_list.append(army1)
                     else:
-                        army_list.remove(army0)
+                        deleted_list.append(army0)
+        
+        for army in deleted_list:
+            army_list.remove(army)
+                        
         
     def is_terminate(self):
-        for agent_armies in self.armies:
-            if len(agent_armies) == 0:
+        for agent in self.agents:
+            count = 0
+            for army in self.armies:
+                if army.agent.id == agent.id:
+                    count += 1
+            if count == 0:
                 return True
         return False
-    
+                    
 
 
 class Node:
     def __init__(self, state: State, action, p_occur):
         # A monte carlo node 
         self.state = state
-        self.visited = 0
-        self.won = 0
+        if action == None:
+            self.visited = 1
+            self.won = 0
+        else:
+            self.visited = 0
+            self.won = 0
+        
         self.action = action
         self.p_occur = p_occur
         self.parent = None
@@ -142,36 +181,72 @@ class Node:
 
     def win_rate(self):
         if self.visited == 0:
-            return 0
+            return 0.0
         return self.won / self.visited
+
+    def weighted_win_rate(self):
+        return self.win_rate() * self.p_occur
    
 
 class Agent:
-    def __init__(self, id, iterations):        
+    def __init__(self, id: int, iterations: int):        
         # Number of iterations for MCTS
         self.iterations = iterations 
         self.id = id
-    
+        self.c = math.sqrt(4)
+
+    def is_win(self, state: State):
+        our_count = 0
+        enemy_count = 0
+        for army in state.armies:
+            if army.agent.id == self.id:
+                our_count += army.troops
+            else:
+                enemy_count += army.troops
+        return our_count > enemy_count
+              
+    def display_map_with_armies(self, state: State):    
+        """
+        This function will print the game map as a grid of characters with armies
+        """
+        armies = state.armies
+        for army in armies:
+            print(army.position)
+        for row in state.map.map:
+            for location in row:
+                is_army = False
+                for army in armies:
+                    if location.coordinates == army.position:
+                        print("A", end=" ")
+                        is_army = True
+                        break
+                if not is_army:
+                    print(".", end=" ")
+            print()
+
+
+
     def rollout(self, node: Node):
         terminal = False
         while not terminal:
             actions = node.state.get_legal_actions(node.state.armies)
-            action = actions[random.randint(0, len(actions))]
-            node.state.get_successor(action)
+            action = actions[random.randint(0, len(actions)-1)]
+            node.state = node.state.get_successor(action)
             node.state.combat(node.state.armies)
             terminal = node.state.is_terminate()
         
-        return 0 if len(node.state.armies) == 0 else 1
+        return 1 if self.is_win(node.state) else 0
     
-    def UCB1(self, node: Node, parent_visited):
-        return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+    def UCB1(self, node: Node, parent_visited: int):
+        if node.visited == 0:
+            return float('inf')
+        return node.weighted_win_rate() + self.c*(math.sqrt((math.log(parent_visited)/node.visited)))
     
     def get_enemy_armies(self, node: Node):
         armies = []
         for army in node.state.armies:
             if army.agent.id != self.id:
                 armies.append(army)
-
         return armies
     
     def expand(self, node: Node):
@@ -179,17 +254,21 @@ class Agent:
         successors = list()
         for action in actions:
             successor = node.state.get_successor(action)
-            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies()))
+            p_occur = 1/len(node.state.get_legal_actions(self.get_enemy_armies(node)))
             combat_successors = node.state.combat_proposition(successor.armies, p_occur)
+            agent_action = list()
+            for act in action:
+                if act[0].agent.id == self.id:
+                    agent_action.append(act)
             if (len(combat_successors) == 0):
-                successors.append(Node(successor, action, p_occur))
+                successors.append(Node(successor, agent_action, p_occur))
             else:
                 for combat_successor in combat_successors:
-                    successors.append(Node(combat_successor[0], action, combat_successor[1]))
-
-        for success in successors:
-            node.successors.append(success)
+                    successors.append(Node(combat_successor[0], agent_action, combat_successor[1]))
         
+        for successor in successors:
+            successor.parent = node
+
         return successors
 
     def select_node(self, node: Node):
@@ -200,51 +279,62 @@ class Agent:
         max_UCB1 = self.UCB1(node.successors[0], node.visited)
         for successor in node.successors:
             if self.UCB1(successor, node.visited) > max_UCB1:
+                max_UCB1 = self.UCB1(successor, node.visited)
                 max_UCB1_node = successor
 
         return max_UCB1_node
     
-    def backpropagate(self, node: Node, val):
+    def backpropagate(self, node: Node, val: int):
         while node.parent != None:
-            node.visited +=1
-            node.won +=1
+            node.visited += 1
+            node.won += val
             node = node.parent
-            
-        node.visited +=1
-        node.won +=1
 
+        node.visited += 1
+        node.won += val
 
 
     def monte_carlo(self, state: State):       
         # Root is the current state
-        root = Node(state)
+        root = Node(state, None, 1)
 
         for _ in range(self.iterations):
             # Select state until we reach a leaf node
-            node = self.select_state(root)
+            node = root
+            while len(node.successors) > 0:
+                node = self.select_node(node)
+                node.visited += 1
 
             # Expand the leaf node
-            node.successors = self.get_successors()
+            node.successors = self.expand(node)
+            if len(node.successors) == 0:
+                if self.is_win(node.state):
+                    self.backpropagate(node, 1)
+                    
+                else:
+                    self.backpropagate(node, 0)
+            else:
+                # Select one of the leaf nodes and rollout
+                node = self.select_node(node)
+                win = self.rollout(node)
+        
+                # Back-propagate
+                self.backpropagate(node, win)
+                
+        # Generate a dictionary wherein key=action and value=total utility of said action
+        total_utils = dict()
+        for successor in root.successors:
+            action = tuple(successor.action)
+            if action in total_utils:
+                total_utils[action] += successor.weighted_win_rate()
+            else:
+                total_utils[action] = successor.weighted_win_rate()
 
+        if len(total_utils) == 0:
+            return None
+        
+        # Best action is action with highest utility
+        best_action = max(total_utils, key=total_utils.get)
+        result = state.get_successor(best_action).armies
+        return result
 
-            # Select one of the leaf nodes 
-
-
-            # Rollout
-            
-
-            # Back-propagate
-            pass
-
-        self.take_action(root.successors)
-        return 
-    
-
-    # def take_action(self, successor_nodes: Node):
-    #     """
-    #     Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
-    #     """
-    #     pass
-
-    
-    

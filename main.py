@@ -1,11 +1,12 @@
 from game import Game
 
-
 scenario = {
     "width": 10,
-    "height": 9,
+    "height": 10,
+    "iterations": 1000,
+    "start_army": [1000, 3000],
 }
 
 if __name__ == '__main__':
-    game = Game(scenario["width"], scenario["height"])
+    game = Game(scenario["width"], scenario["height"], scenario["iterations"], scenario["start_army"])
     game.play()
