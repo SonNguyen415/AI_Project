@@ -1,10 +1,6 @@
 from enum import Enum
 
 
-MAX_SUPPLY = 1000
-MIN_SUPPLY = 10 # Minimum before sending
-GENERATOR_SPEED = 10
-
 class TerrainType(Enum):
     WATER = 1
     FLATLAND = 2
@@ -22,12 +18,7 @@ class Location:
         self.terrain = terrain
         self.location_type = location_type
         self.coordinates = coordinates
-        self.supply = 100 
         self.path_cost = self.set_path_cost()
-
-    def delete_cache(self):
-        self.supply = 0
-        self.location_type = LocationType.PASSABLE
 
     def set_path_cost(self):
         match self.terrain:

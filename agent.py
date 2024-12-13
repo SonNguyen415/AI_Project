@@ -1,7 +1,7 @@
 """
 This file contains code for the agents themselves and their decisions
 """
-import army, game_map, itertools, random, math
+import game_map, itertools, random, math
     
 
 class State: 
@@ -143,7 +143,7 @@ class Node:
     def win_rate(self):
         if self.visited == 0:
             return 0
-        return self.won / self.visited
+        return self.won / self.visited * self.p_occur
    
 
 class Agent:
@@ -164,7 +164,7 @@ class Agent:
         return 0 if len(node.state.armies) == 0 else 1
     
     def UCB1(self, node: Node, parent_visited):
-        return node.won + (2*math.sqrt((math.log(parent_visited)/node.visited)))
+        return node.win_rate() + (2*math.sqrt((math.log(parent_visited)/node.visited)))
     
     def get_enemy_armies(self, node: Node):
         armies = []
@@ -237,14 +237,4 @@ class Agent:
             pass
 
         self.take_action(root.successors)
-        return 
-    
-
-    # def take_action(self, successor_nodes: Node):
-    #     """
-    #     Given a list of successor nodes, choose successor based on UCB1, return the corresponding action
-    #     """
-    #     pass
-
-    
-    
+        return   
