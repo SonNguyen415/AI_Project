@@ -13,8 +13,7 @@ To see the map on each step, set VERBOSE to true in main.py
 ### Expected Results ###
 Agent 1 is a constant, iterating 10 times.
 
-Agent 0 iterates either 20, 100, or 1000 times based on the scenario
-
+Agent 0 iterates either 10, 100, or 1000 times based on the scenario
 
 For scenario 1, we expect a winrate of Agent 0 and 1 of 50-50. 
 
