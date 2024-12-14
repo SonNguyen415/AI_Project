@@ -40,7 +40,7 @@ For scenario 1, we expected a winrate of Agent 0 and 1 of 50-50.
 For scenario 2, we expected that Agent 0 will do slightly better.
 For scenario 3, we expected further improvement.
 
-Results:
+### Results ###
 We found minimal, if any improvement across the the scenarios. 
 Scenario 1 resulted in Agent 0 winning 14 times with 109 troops left on average, Agent 1 won 11 times with 296 troops left on average.
 Scenario 1 resulted in Agent 0 winning 15 times with 121 troops left on average, Agent 1 10 times with 187 troops left on average.
