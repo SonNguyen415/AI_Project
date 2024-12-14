@@ -15,7 +15,7 @@ Agent 1 is a constant, iterating 10 times.
 
 Agent 0 iterates either 10, 100, or 1000 times based on the scenario
 
-For scenario 1, we expect a winrate of Agent 0 and 1 of 50-50. 
+For scenario 1, we expect a winrate of Agent 0 and 1 of 50-50. Plus or minus one. 
 
 For scenario 2, we expect that Agent 0 will do slightly better- closer to 60-40. 
 
