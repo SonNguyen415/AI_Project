@@ -57,7 +57,8 @@ class Game:
 
 
     def play(self):
-        print("\tGame started")
+        if self.verbose:
+            print("\tGame started")
 
         while not self.state.is_terminate():
             if self.verbose:
@@ -71,10 +72,10 @@ class Game:
             for i, agent in enumerate(self.agents):
                 agent_armies = agent.monte_carlo(self.state)
                 if agent_armies == None:
-                    print(f"\tGame over! Agent {i} died from attrition!")
-                    self.display_map_with_armies()
-                    print(f"\tAgent {i} wins!")
-                    print("\tRemaining Agent Troops:", self.state.evaluate(i))
+                    if self.verbose:
+                        print(f"\tGame over! Agent {i} died from attrition!")
+                        print(f"\tAgent {i} wins!")
+                        print("\tRemaining Agent Troops:", self.state.evaluate(i))
                     return tuple([i,self.state.evaluate(i)])
                 
                 new_armies.extend(agent_armies)
@@ -88,9 +89,11 @@ class Game:
             # Check if the game is over
             for i, agent in enumerate(self.state.agents):
                 if self.state.is_terminate() and agent.is_win(self.state):
-                    print(f"\tAgent {i} wins!")
-                    print("\tRemaining Agent Troops:", self.state.evaluate(i))
+                    if self.verbose:
+                        print(f"\tAgent {i} wins!")
+                        print("\tRemaining Agent Troops:", self.state.evaluate(i))
                     return tuple([i,self.state.evaluate(i)])
 
-
-        print("\tGame over")
+        if self.verbose:
+            print("\tGame over")
+            print("-------------------------------------------------------------")
