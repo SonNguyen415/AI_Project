@@ -3,7 +3,7 @@ import agent as ag
 
 
 class Game:
-    def __init__(self, width, height, iterations, start_sz) -> None:
+    def __init__(self, width, height, iterations, start_sz,verbose) -> None:
         self.map = game_map.GameMap(width, height)
         self.width = width
         self.height = height
@@ -12,6 +12,7 @@ class Game:
         self.agents = list()
         self.agents.append(ag.Agent(0, iterations))
         self.agents.append(ag.Agent(1, self.agent1_iterations))
+        self.verbose = verbose
 
         # Initialize state
         armies = list()
@@ -59,11 +60,12 @@ class Game:
         print("\tGame started")
 
         while not self.state.is_terminate():
-            # self.display_map_with_armies()
-            # for army in self.state.armies:
-            #     print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
-            # print("\n-------------------------------------------------------------------------\n")
-            
+            if self.verbose:
+                self.display_map_with_armies()
+                for army in self.state.armies:
+                    print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
+                print("\n-------------------------------------------------------------------------\n")
+                
             # Each agent performs Monte Carlo rooted at current state
             new_armies = list()
             for i, agent in enumerate(self.agents):
