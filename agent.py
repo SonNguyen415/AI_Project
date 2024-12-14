@@ -52,12 +52,6 @@ class State:
 
         # Initialize list for new army classes
         armies = list()
-
-        
-        # if self.true_state:
-        #     print("Get successor")
-        #     print(f"Army {self.armies[0].agent.id} at {self.armies[0].position} with {self.armies[0].troops} troops")
-
         # Loop through the new positions list
         for pair in army_position_pairs:
             #Create army successor
@@ -68,10 +62,6 @@ class State:
 
         # Return list of successor armies
         successor = State(self.agents, self.map, armies)
-
-        # if self.true_state:
-        #     print(f"Army {successor.armies[0].agent.id} at {successor.armies[0].position} with {successor.armies[0].troops} troops")
-
         return successor
 
     def combat_proposition(self, army_list: list, probability):
@@ -134,19 +124,16 @@ class State:
 
                 if army0.position == army1.position:
                     
-                    if self.true_state:
-                        print("Combat!")
-                        print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
-                        print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
+                    # if self.true_state:
+                    #     print("Combat!")
+                    #     print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
+                    #     print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
 
-                    probability0 = army0.troops/(army0.troops + army1.troops)
-                    probability1 = army1.troops/(army0.troops + army1.troops)
-                    choice = random.choices([0, 1], [probability0, probability1])
-                    if choice == 0:
+                    choice = random.choices([0, 1], [army0.troops, army1.troops])
+                    if choice[0] == 0:
                         deleted_list.append(army1)
                     else:
                         deleted_list.append(army0)
-        
         for army in deleted_list:
             army_list.remove(army)
                         
@@ -161,7 +148,13 @@ class State:
                 return True
         return False
                     
-
+    #return sum of remaining army sum. 
+    def evaluate(self, agent_id):        
+        count = 0
+        for army in self.armies:
+            if army.agent.id == agent_id:
+                count += army.troops
+        return count
 
 class Node:
     def __init__(self, state: State, action, p_occur):
@@ -204,27 +197,6 @@ class Agent:
             else:
                 enemy_count += army.troops
         return our_count > enemy_count
-              
-    def display_map_with_armies(self, state: State):    
-        """
-        This function will print the game map as a grid of characters with armies
-        """
-        armies = state.armies
-        for army in armies:
-            print(army.position)
-        for row in state.map.map:
-            for location in row:
-                is_army = False
-                for army in armies:
-                    if location.coordinates == army.position:
-                        print("A", end=" ")
-                        is_army = True
-                        break
-                if not is_army:
-                    print(".", end=" ")
-            print()
-
-
 
     def rollout(self, node: Node):
         terminal = False
@@ -309,8 +281,7 @@ class Agent:
             node.successors = self.expand(node)
             if len(node.successors) == 0:
                 if self.is_win(node.state):
-                    self.backpropagate(node, 1)
-                    
+                    self.backpropagate(node, 1)    
                 else:
                     self.backpropagate(node, 0)
             else:

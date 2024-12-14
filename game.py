@@ -1,21 +1,18 @@
-"""
-This file will contain the main logic for the game flow
-"""
 import game_map, army
 import agent as ag
-import locations as loc
 
 
 class Game:
-    def __init__(self, width, height, iterations, start_sz) -> None:
+    def __init__(self, width, height, iterations, start_sz,verbose) -> None:
         self.map = game_map.GameMap(width, height)
         self.width = width
         self.height = height
-
+        self.agent1_iterations = 10
         # Initialize agents 
         self.agents = list()
         self.agents.append(ag.Agent(0, iterations))
-        self.agents.append(ag.Agent(1, 100))
+        self.agents.append(ag.Agent(1, self.agent1_iterations))
+        self.verbose = verbose
 
         # Initialize state
         armies = list()
@@ -24,8 +21,6 @@ class Game:
 
         for i, sz in enumerate(start_sz):
             armies.append(army.Army(self.agents[1], sz, (height-1-i, width-1)))
-
-        print(armies)
         self.state = ag.State(self.agents, self.map, armies)
        
 
@@ -35,8 +30,6 @@ class Game:
         """
         the_map = self.map.map
         armies = self.state.armies
-        for army in armies:
-            print(army.position)
         for row in the_map:
             for location in row:
                 is_army = False
@@ -64,23 +57,27 @@ class Game:
 
 
     def play(self):
-        print("Game started")
-        # self.display_map_with_armies()
+        if self.verbose:
+            print("\tGame started")
 
         while not self.state.is_terminate():
-            self.display_map_with_armies()
-            for army in self.state.armies:
-                print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
-            print("\n-------------------------------------------------------------------------\n")
-            
+            if self.verbose:
+                self.display_map_with_armies()
+                for army in self.state.armies:
+                    print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
+                print("\n-------------------------------------------------------------------------\n")
+                
             # Each agent performs Monte Carlo rooted at current state
             new_armies = list()
             for i, agent in enumerate(self.agents):
                 agent_armies = agent.monte_carlo(self.state)
                 if agent_armies == None:
-                    print(f"Game over! Agent {i} died from attrition!")
-                    self.display_map_with_armies()
-                    return
+                    if self.verbose:
+                        print(f"\tGame over! Agent {i} died from attrition!")
+                        print(f"\tAgent {i} wins!")
+                        print("\tRemaining Agent Troops:", self.state.evaluate(i))
+                    return tuple([i,self.state.evaluate(i)])
+                
                 new_armies.extend(agent_armies)
 
             self.state = ag.State(self.agents, self.map, new_armies)
@@ -92,9 +89,11 @@ class Game:
             # Check if the game is over
             for i, agent in enumerate(self.state.agents):
                 if self.state.is_terminate() and agent.is_win(self.state):
-                    print(f"Agent {i} wins!")
-                    return
+                    if self.verbose:
+                        print(f"\tAgent {i} wins!")
+                        print("\tRemaining Agent Troops:", self.state.evaluate(i))
+                    return tuple([i,self.state.evaluate(i)])
 
-        print("Game over")
-
-    
+        if self.verbose:
+            print("\tGame over")
+            print("-------------------------------------------------------------")
