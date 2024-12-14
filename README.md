@@ -17,7 +17,13 @@ Agent 0 iterates either 10, 100, or 1000 times based on the scenario
 
 For scenario 1, we expect a winrate of Agent 0 and 1 of 50-50. Plus or minus one. 
 
-For scenario 2, we expect that Agent 0 will do slightly better- closer to 60-40. 
+For scenario 2, we expected that Agent 0 will do slightly better- closer to 60-40. 
 
-For scenario 3, we expect closer to 70-30
+For scenario 3, we expected closer to 70-30
 
+
+The big problem: 
+Our game was too stochastic. we used stochastic calculations to determine outcomes in combat. 
+we used stochastic placement of supplies on the map. 
+
+What this means is that there's no way to guarantee results unless we make it completely deterministic. 
