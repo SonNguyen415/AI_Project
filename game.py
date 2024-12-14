@@ -7,7 +7,7 @@ class Game:
         self.map = game_map.GameMap(width, height)
         self.width = width
         self.height = height
-        self.agent1_iterations = 10
+        self.agent1_iterations = 1
         # Initialize agents 
         self.agents = list()
         self.agents.append(ag.Agent(0, iterations))
@@ -57,43 +57,47 @@ class Game:
 
 
     def play(self):
-        if self.verbose:
-            print("\tGame started")
+        print("\tGame started")
+        moves = 0
 
         while not self.state.is_terminate():
+            moves += 1
             if self.verbose:
                 self.display_map_with_armies()
                 for army in self.state.armies:
-                    print(f"Army {army.agent.id} at {army.position} with {army.troops} troops")
-                print("\n-------------------------------------------------------------------------\n")
+                    print(f"Army {army.agent.id} at {army.position} with {army.troops} troops. Correspond to map above.")
                 
             # Each agent performs Monte Carlo rooted at current state
             new_armies = list()
             for i, agent in enumerate(self.agents):
                 agent_armies = agent.monte_carlo(self.state)
-                if agent_armies == None:
+                if agent_armies is None:
+                    winner = 0 if i == 1 else 1
+                    print(f"\tAgent {winner} wins after {moves} moves. Last enemy died from attrition!")
                     if self.verbose:
-                        print(f"\tGame over! Agent {i} died from attrition!")
-                        print(f"\tAgent {i} wins!")
                         print("\tRemaining Agent Troops:", self.state.evaluate(i))
-                    return tuple([i,self.state.evaluate(i)])
-                
+                    return tuple([winner,self.state.evaluate(winner)])
                 new_armies.extend(agent_armies)
 
             self.state = ag.State(self.agents, self.map, new_armies)
             self.state.true_state = True
-           
-            # Calculate combat if there's collision. This will also update the state result
-            self.state.combat(self.state.armies)
 
             # Check if the game is over
             for i, agent in enumerate(self.state.agents):
                 if self.state.is_terminate() and agent.is_win(self.state):
+                    print(f"\tAgent {i} wins after {moves} moves. Last enemy died from attrition!")
                     if self.verbose:
-                        print(f"\tAgent {i} wins!")
+                        print("\tRemaining Agent Troops:", self.state.evaluate(i))
+                    return tuple([i,self.state.evaluate(i)])
+                
+            self.state.combat(new_armies)
+           
+            # Check if the game is over
+            for i, agent in enumerate(self.state.agents):
+                if self.state.is_terminate() and agent.is_win(self.state):
+                    print(f"\tAgent {i} wins after {moves} moves!")
+                    if self.verbose:
                         print("\tRemaining Agent Troops:", self.state.evaluate(i))
                     return tuple([i,self.state.evaluate(i)])
 
-        if self.verbose:
-            print("\tGame over")
-            print("-------------------------------------------------------------")
+        print("\tGame over. Draw!. Total Moves:", moves)

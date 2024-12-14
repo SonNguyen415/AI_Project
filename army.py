@@ -3,6 +3,7 @@ This file will contain logic for the army system. This includes movement
 """
 import game_map
 import locations
+import math
 
 class Army:
     def __init__(self, agent, troops, position):
@@ -48,7 +49,7 @@ class Army:
         :Returns Army class
         """
         # Attrition
-        new_troops = max(0, self.troops - game_map.get_path_cost(self.position, new_position))
+        new_troops = max(0, math.floor(self.troops * (1 - game_map.get_path_cost(self.position, new_position)/250)))
 
         if new_troops == 0:
             return None
