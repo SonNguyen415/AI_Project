@@ -63,7 +63,6 @@ if __name__ == '__main__':
             win_counts3[winner] += 1
 
     print("Scenario 1: Agent 1 and Agent 0 both use MCTS with 20 iterations ten times -- effectively random movement.")
-    print("we expect agent 1 to win most if not all of the time as has the advantage of going second")
     print("Scenario 1 Win counts:", win_counts1)
 
     print("Scenario 2: Agent 0 uses 100 iterations while Agent 1 only does 20. Runs ten times")
