@@ -46,6 +46,7 @@ This will update the requirements.txt file. You then can commit this file.
 
 ### To Run ###
 To run:
+To run third scenario, go into main.py and set third to true
 ```bash
 python main.py
 ```
