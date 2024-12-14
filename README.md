@@ -5,7 +5,7 @@ This is the AI Algorithms project. The goal is to develop a strategy game AI to 
 ### To Run ###
 To run:
 ```bash
-python main.py
+python3 main.py
 ```
 
 This will run our default scenario. Each agent has 2 armies (2000 and 3000 troops), operating on a 10x10 map (to reduce the number of moves needed for the simulation, but tests were done on larger map)
