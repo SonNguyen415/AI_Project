@@ -1,6 +1,23 @@
 # AI_Project
 
 This is the AI Algorithms project. The goal is to develop a strategy game AI to play in an unknown map with unknown opposition. This AI must take into account a supply system and defend its own while taking out the other side's supply system
+### To Run ###
+To run:
+To run third scenario, go into main.py and set third to true
+```bash
+python main.py
+```
+
+### Expected Results ###
+Agent 1 is a constant, iterating 10 times.
+
+Agent 0 iterates either 20, 100, or 1000 times based on the scenario
+
+
+For scenario 1, we expect a winrate of Agent 0 and 1 of 50-50. 
+
+For scenario 2, we expect that Agent 0 will do slightly better- closer to 70-30. 
+
 
 ### Development Rules ###
 1. Develop features in a branch, and make commits as small as possible. Pull requests into the main branch needs to be approved by at least on other team member.
@@ -44,9 +61,3 @@ pip freeze > requirements.txt
 ```
 This will update the requirements.txt file. You then can commit this file.
 
-### To Run ###
-To run:
-To run third scenario, go into main.py and set third to true
-```bash
-python main.py
-```

@@ -15,7 +15,8 @@ class Game:
         # Initialize agents 
         self.agents = list()
         self.agents.append(ag.Agent(0, iterations))
-        self.agents.append(ag.Agent(1, 20))
+        #set iterations of agent 1 to ten
+        self.agents.append(ag.Agent(1, 10))
 
         # Initialize state
         armies = list()
