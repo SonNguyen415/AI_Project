@@ -124,8 +124,8 @@ class State:
 
                 if army0.position == army1.position:
                     
-                    # if self.true_state:
-                    #     print("Combat!")
+                    if self.true_state:
+                        print("\t\tCombat!")
                     #     print(f"Army {army0.agent.id} at {army0.position} with {army0.troops} troops")
                     #     print(f"Army {army1.agent.id} at {army1.position} with {army1.troops} troops")
 
@@ -196,7 +196,7 @@ class Agent:
                 our_count += army.troops
             else:
                 enemy_count += army.troops
-        return our_count > enemy_count
+        return enemy_count == 0 and our_count > 0
 
     def rollout(self, node: Node):
         terminal = False
